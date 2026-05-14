@@ -13,14 +13,14 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --sw:275px;--hh:54px;
-  --bg:#faf7f2;--surf:#fff;--surf2:#fff8ed;--surf3:#fdf5ec;
-  --brd:#e8ddd0;--brd2:#f0e8dc;
-  --tx:#2d1f0f;--tx2:#7c6a58;--tx3:#b0998a;
-  --a:#c2773a;--ad:#7c3d12;--al:#fef3c7;--am:#fde68a;
+  --bg:#eef2ff;--surf:#fff;--surf2:#f5f3ff;--surf3:#faf5ff;
+  --brd:#c7d2fe;--brd2:#ddd6fe;
+  --tx:#1e1b4b;--tx2:#4338ca;--tx3:#818cf8;
+  --a:#6366f1;--ad:#4338ca;--al:#e0e7ff;--am:#c7d2fe;
   --l1:#16a34a;--l1bg:#f0fdf4;--l1bd:#bbf7d0;
   --l2:#d97706;--l2bg:#fffbeb;--l2bd:#fde68a;
   --l3:#dc2626;--l3bg:#fff1f2;--l3bd:#fecaca;
-  --shad:rgba(160,110,60,.10);--shad2:rgba(160,110,60,.18)}
+  --shad:rgba(99,102,241,.10);--shad2:rgba(99,102,241,.22)}
 body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   background:var(--bg);color:var(--tx);min-height:100vh}
 
@@ -54,7 +54,7 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 
 /* ── Header ── */
 #hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);
-  background:linear-gradient(135deg,#6b3410,#a0531c);color:#fff;
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;
   display:flex;align-items:center;padding:0 18px;z-index:300;gap:10px;
   box-shadow:0 2px 12px rgba(100,40,0,.28)}
 #hbg{font-size:1.3rem;cursor:pointer;display:none;background:none;border:none;color:#fff;padding:4px}
@@ -257,7 +257,7 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 #mp-box{background:var(--bg);border-radius:20px;width:100%;max-width:720px;
   min-height:80vh;box-shadow:0 16px 60px rgba(100,40,5,.3);
   border:1.5px solid var(--brd);overflow:hidden;margin:auto}
-#mp-hdr{background:linear-gradient(135deg,#6b3410,#a0531c);color:#fff;
+#mp-hdr{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;
   padding:20px 24px;display:flex;align-items:center;gap:12px}
 #mp-avatar{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);
   display:flex;align-items:center;justify-content:center;font-size:1.4rem;
@@ -333,45 +333,6 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   .lv-stat-row{grid-template-columns:1fr}
 }
 
-/* ─── WHALE MASCOT ─── */
-#whale-mascot{position:fixed;bottom:22px;right:22px;width:130px;z-index:100;
-  cursor:pointer;filter:drop-shadow(0 4px 14px rgba(0,0,0,.2));user-select:none}
-.whale-svg{width:130px;animation:w-float 3s ease-in-out infinite}
-@keyframes w-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-@keyframes w-happy{
-  0%{transform:translateY(0) scale(1)}
-  30%{transform:translateY(-24px) scale(1.13) rotate(8deg)}
-  60%{transform:translateY(-18px) scale(1.1) rotate(-6deg)}
-  100%{transform:translateY(0) scale(1)}
-}
-@keyframes w-sad{
-  0%,100%{transform:translateX(0) rotate(0)}
-  20%{transform:translateX(-8px) rotate(-5deg)}
-  50%{transform:translateX(9px) rotate(5deg)}
-  80%{transform:translateX(-4px) rotate(-2deg)}
-}
-@keyframes w-celeb{
-  0%{transform:scale(1) rotate(0)}
-  20%{transform:scale(1.28) rotate(-13deg)}
-  40%{transform:scale(1.32) rotate(13deg)}
-  60%{transform:scale(1.18) rotate(-6deg)}
-  80%{transform:scale(1.08) rotate(4deg)}
-  100%{transform:scale(1) rotate(0)}
-}
-.w-svg-happy{animation:w-happy .9s ease forwards!important}
-.w-svg-sad  {animation:w-sad   .7s ease forwards!important}
-.w-svg-celeb{animation:w-celeb 1s ease forwards!important}
-.whale-speech{
-  position:absolute;top:-54px;left:-75px;
-  background:white;border-radius:12px;padding:7px 13px;
-  font-size:.78rem;font-weight:600;color:#333;
-  box-shadow:0 3px 14px rgba(0,0,0,.16);border:1.5px solid #5b9bd5;
-  white-space:nowrap;animation:sp-pop .3s ease;pointer-events:none
-}
-.whale-speech::after{content:'';position:absolute;bottom:-8px;right:22px;
-  border:8px solid transparent;border-top-color:white}
-@keyframes sp-pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
-
 /* ─── CONFETTI ─── */
 .confetti-piece{position:fixed;top:-12px;z-index:9999;
   animation:conf-fall linear forwards;pointer-events:none}
@@ -428,36 +389,236 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   color:white;border-radius:8px;padding:1px 7px;font-size:.6rem;
   font-weight:700;vertical-align:middle;margin-left:6px}
 
+
+/* ══════════════════════════════════════════════════════════
+   🌈  KIDS-FRIENDLY THEME  –  bubbly, bright, bouncy
+══════════════════════════════════════════════════════════ */
+
+/* Subtle dot-grid background */
+body {
+  background: var(--bg) !important;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(99,102,241,.09) 1px, transparent 0) !important;
+  background-size: 30px 30px !important;
+}
+
+/* Header */
+#hdr { box-shadow: 0 4px 22px rgba(99,102,241,.32) !important; }
+#hdr h1 { font-size: 1rem !important; }
+#srch { border-radius: 50px !important; }
+
+/* ── Mode buttons ── */
+.mbtn {
+  border-radius: 50px !important;
+  padding: 8px 22px !important;
+  transition: transform .14s, box-shadow .14s !important;
+}
+.mbtn:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 8px 22px rgba(99,102,241,.28) !important;
+  background: var(--al) !important;
+  border-color: var(--a) !important;
+  color: var(--ad) !important;
+}
+.mbtn.active {
+  background: linear-gradient(135deg,#7c3aed,#6366f1) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(99,102,241,.42) !important;
+}
+
+/* ── Sidebar ── */
+#sb { background: linear-gradient(180deg,#f5f3ff,#eef2ff) !important; border-right-color: var(--brd) !important; }
+.ci:hover  { background: #e0e7ff !important; }
+.ci.active { background: #ddd6fe !important; }
+
+/* ── Category header ── */
+.ch { border-radius: 24px !important; }
+
+/* ── Word table ── */
+.blk  { border-radius: 20px !important; box-shadow: 0 4px 20px var(--shad) !important; }
+.kc   { color: #4338ca !important; font-size: 1.0rem !important; font-weight: 700 !important; }
+.wt th { background: #f5f3ff !important; color: #5b21b6 !important; }
+.wt tr:hover td { background: #eef2ff !important; }
+.fbt  { border-radius: 50px !important; }
+
+/* ── Flashcards ── */
+.card {
+  border-radius: 30px !important;
+  border: 2.5px solid var(--brd2) !important;
+  box-shadow: 0 8px 32px var(--shad) !important;
+}
+.card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 52px var(--shad2) !important;
+}
+.cf-ko {
+  font-size: 2.15rem !important;
+  color: #4338ca !important;
+  font-weight: 900 !important;
+}
+.cb-en { font-size: 1.3rem !important; font-weight: 700 !important; }
+.ctts {
+  background: var(--al) !important;
+  color: var(--ad) !important;
+  border-radius: 50px !important;
+  padding: 6px 18px !important;
+  font-weight: 700 !important;
+  transition: transform .12s !important;
+}
+.ctts:hover { background: var(--am) !important; transform: scale(1.07) !important; }
+.cnav {
+  border-radius: 50px !important;
+  padding: 10px 28px !important;
+  transition: transform .14s, box-shadow .14s !important;
+}
+.cnav:hover {
+  background: var(--al) !important;
+  border-color: var(--a) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 18px var(--shad) !important;
+}
+.cflipbtn { border-radius: 50px !important; }
+
+/* ── Progress bars (card + quiz views) ── */
+.pgfill {
+  background: linear-gradient(90deg,#818cf8,#ec4899) !important;
+}
+/* Sidebar category fills are inline-styled per category – skip */
+
+/* ── Quiz ── */
+.qcard {
+  border-radius: 26px !important;
+  border: 2px solid var(--brd2) !important;
+  background: linear-gradient(145deg,#fff 50%,var(--surf2)) !important;
+  box-shadow: 0 6px 28px var(--shad) !important;
+}
+.qword {
+  font-size: 2rem !important;
+  font-weight: 900 !important;
+  color: #4338ca !important;
+}
+.opt {
+  border-radius: 20px !important;
+  padding: 17px 16px !important;
+  font-size: .91rem !important;
+  border: 2.5px solid var(--brd2) !important;
+  transition: transform .11s, box-shadow .11s, background .11s !important;
+}
+.opt:hover:not(:disabled) {
+  background: var(--al) !important;
+  border-color: var(--a) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 18px var(--shad) !important;
+}
+.opt.correct {
+  background: #d1fae5 !important;
+  border-color: #10b981 !important;
+  color: #065f46 !important;
+  font-weight: 700 !important;
+}
+.opt.wrong {
+  background: #ffe4e6 !important;
+  border-color: #f43f5e !important;
+  color: #9f1239 !important;
+}
+.qnext {
+  background: linear-gradient(135deg,#7c3aed,#6366f1) !important;
+  border-radius: 50px !important;
+  font-size: .95rem !important;
+  box-shadow: 0 4px 14px rgba(99,102,241,.38) !important;
+}
+.qnext:hover { transform: translateY(-2px) !important; }
+.qscore {
+  background: linear-gradient(135deg,#7c3aed,#6366f1) !important;
+  color: #fff !important;
+  border-radius: 50px !important;
+}
+.qdbtn.active, .dbtn.active {
+  background: linear-gradient(135deg,#7c3aed,#4338ca) !important;
+  border-color: transparent !important;
+}
+.qdbtn, .dbtn, .sfbtn, .qreset { border-radius: 50px !important; }
+.sfbtn.active {
+  background: linear-gradient(135deg,#7c3aed,#6366f1) !important;
+  box-shadow: 0 2px 8px rgba(99,102,241,.3) !important;
+}
+
+/* ── XP bar ── */
+#xp-bar-row { background: #f0edff !important; border-bottom-color: var(--brd) !important; }
+.xp-lv {
+  background: linear-gradient(135deg,#7c3aed,#ec4899) !important;
+  border-radius: 50px !important;
+  padding: 3px 14px !important;
+  font-size: .7rem !important;
+  letter-spacing: .3px;
+}
+#xp-fill { background: linear-gradient(90deg,#6366f1,#ec4899) !important; }
+.xp-track { background: var(--brd2) !important; }
+
+/* ── Auth modal ── */
+#auth-box { border-radius: 26px !important; }
+.auth-title { color: #4f46e5 !important; font-size: 1.1rem !important; }
+.auth-logo  { font-size: 2.6rem !important; }
+.abtn {
+  background: linear-gradient(135deg,#7c3aed,#6366f1) !important;
+  border-radius: 50px !important;
+  font-size: .93rem !important;
+  padding: 13px !important;
+  box-shadow: 0 4px 14px rgba(99,102,241,.36) !important;
+}
+.abtn:hover { transform: translateY(-2px) !important; }
+.atab.active { color: #4f46e5 !important; }
+.ainput:focus {
+  border-color: #818cf8 !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.18) !important;
+}
+
+/* ── My Page ── */
+#mp-box  { border-radius: 26px !important; }
+.mptab.active {
+  color: #7c3aed !important;
+  border-bottom-color: #7c3aed !important;
+}
+.mp-stat {
+  border-radius: 20px !important;
+  border-color: var(--brd) !important;
+}
+.mp-stat .n { color: #4f46e5 !important; font-size: 1.8rem !important; }
+.streak-box { border-color: var(--brd) !important; }
+
+/* Badge cards */
+.bdg-card.earned {
+  border-color: #7c3aed !important;
+  box-shadow: 0 3px 16px rgba(124,58,237,.22) !important;
+}
+
+/* ── Grammar badges ── */
+.gram-past { background:#dbeafe !important; color:#1d4ed8 !important; border-color:#93c5fd !important; }
+.gram-hon  { background:#fef3c7 !important; color:#b45309 !important; border-color:#fcd34d !important; }
+
+/* ── Level-up modal ── */
+.lu-box    { border-radius: 30px !important; }
+#lu-title  { color: #7c3aed !important; }
+
+/* ── Flashcard modal ── */
+#fcb   { border-radius: 26px !important; }
+#fcd   { border-radius: 22px !important; border-color: var(--brd) !important; }
+#fcd:hover { background: #e0e7ff !important; }
+#fcf   { color: #4338ca !important; font-size: 1.65rem !important; font-weight: 800 !important; }
+.fnb   { border-radius: 50px !important; }
+.fnb:hover { background: var(--al) !important; color: var(--ad) !important; }
+
+/* ── Pop animation on correct answer ── */
+@keyframes kPop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.07); }
+  100% { transform: scale(1.02); }
+}
+.opt.correct { animation: kPop .28s ease forwards; }
+
 </style>
 </head>
 <body>
-
-<!-- ═══ WHALE MASCOT ═══ -->
-<div id="whale-mascot">
-  <div id="whale-speech" class="whale-speech" style="display:none"></div>
-  <svg class="whale-svg" viewBox="0 0 162 104" xmlns="http://www.w3.org/2000/svg">
-    <!-- tail -->
-    <path d="M130 54 Q152 34 161 23 Q155 52 161 77 Q152 65 130 54" fill="#4a7fc1"/>
-    <!-- body -->
-    <ellipse cx="78" cy="57" rx="65" ry="39" fill="#5b9bd5"/>
-    <!-- belly -->
-    <ellipse cx="68" cy="65" rx="43" ry="22" fill="#b8dcf5"/>
-    <!-- dorsal fin -->
-    <path d="M60 56 Q67 29 84 27 Q74 46 76 56" fill="#4a7fc1"/>
-    <!-- eye white -->
-    <circle cx="38" cy="46" r="7.5" fill="white"/>
-    <!-- pupil -->
-    <circle cx="40" cy="44" r="3.8" fill="#1a1a2e"/>
-    <!-- eye shine -->
-    <circle cx="41.5" cy="42.5" r="1.4" fill="white"/>
-    <!-- happy mouth (default) -->
-    <path id="wm-happy" d="M 28 58 Q 38 68 48 58" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- sad mouth (hidden) -->
-    <path id="wm-sad" d="M 28 65 Q 38 56 48 65" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round" style="display:none"/>
-    <!-- spout -->
-    <path d="M52 19 Q49 8 53 1 M58 17 Q58 5 58 -1 M64 19 Q67 8 63 1" stroke="#b8dcf5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  </svg>
-</div>
 
 <!-- ═══ LEVEL-UP MODAL ═══ -->
 <div id="lu-modal">
@@ -1034,7 +1195,6 @@ function renderQuizQ(){
     if(pct===100) GAME_DATA.perfects = (GAME_DATA.perfects||0)+1;
     GAME_DATA.wordsStudied = Math.max(GAME_DATA.wordsStudied||0, Object.keys(PROG).length*10);
     if(_xpEarned>0) addXP(_xpEarned);
-    if(pct>=100) triggerWhale('celebrate'); else if(pct>0) triggerWhale('happy');
     renderSidebar();
     document.getElementById('qbody').innerHTML=`
       <div class="qcard">
@@ -1069,7 +1229,6 @@ function renderQuizQ(){
 function answerQ(idx,correct){
   if(QA!==null)return; QA=idx;
   if(correct)QS++;
-  triggerWhale(correct?'happy':'sad');
   document.querySelectorAll('.opt').forEach((b,i)=>{
     b.disabled=true;
     if(i===idx) b.classList.add(correct?'correct':'wrong');
@@ -1407,7 +1566,6 @@ function showLevelUp(lv) {
   document.getElementById('lu-en').textContent    = lv.nameEn;
   const m = document.getElementById('lu-modal');
   m.style.display = 'flex';
-  triggerWhale('celebrate');
   setTimeout(()=>{ m.style.display='none'; }, 3400);
 }
 
@@ -1487,71 +1645,9 @@ async function loadGameData() {
   if (GAME_DATA.lastLoginDay !== today) {
     GAME_DATA.lastLoginDay = today;
     setTimeout(()=>{ addXP(5); }, 1800);
-    setTimeout(()=>{ triggerWhale('happy'); showWhaleSpeech('오늘도 파이팅! 📖'); }, 800);
   }
 }
 
-// ── WHALE ──────────────────────────────────────────────
-function triggerWhale(type) {
-  const svg  = document.querySelector('.whale-svg');
-  const mhap = document.getElementById('wm-happy');
-  const msad = document.getElementById('wm-sad');
-  if (!svg) return;
-  svg.classList.remove('w-svg-happy','w-svg-sad','w-svg-celeb');
-  void svg.offsetWidth;
-  if (type==='happy') {
-    mhap.style.display=''; msad.style.display='none';
-    svg.classList.add('w-svg-happy');
-    showWhaleSpeech(['잘했어요! 🎉','완벽해요! ✨','굿! 👏','맞아요! 🌟'][Math.floor(Math.random()*4)]);
-  } else if (type==='sad') {
-    mhap.style.display='none'; msad.style.display='';
-    svg.classList.add('w-svg-sad');
-    showWhaleSpeech(['아쉬워요 😢','다시 해봐요 💪','파이팅! 🔥','조금만 더! 😊'][Math.floor(Math.random()*4)]);
-  } else if (type==='celebrate') {
-    mhap.style.display=''; msad.style.display='none';
-    svg.classList.add('w-svg-celeb');
-    showWhaleSpeech('완료! 🐋🎉');
-    spawnConfetti();
-  }
-  clearTimeout(window._wt);
-  window._wt = setTimeout(()=>{
-    svg.classList.remove('w-svg-happy','w-svg-sad','w-svg-celeb');
-    mhap.style.display=''; msad.style.display='none';
-  }, 1700);
-}
-
-function showWhaleSpeech(text) {
-  const sp = document.getElementById('whale-speech');
-  if (!sp) return;
-  sp.textContent = text;
-  sp.style.display = 'block';
-  sp.style.animation = 'none';
-  void sp.offsetWidth;
-  sp.style.animation = 'sp-pop .3s ease';
-  clearTimeout(window._spt);
-  window._spt = setTimeout(()=>{ sp.style.display='none'; }, 2400);
-}
-
-function spawnConfetti() {
-  const cols=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43','#ff6eb4'];
-  for (let i=0;i<38;i++){
-    const el=document.createElement('div');
-    el.className='confetti-piece';
-    const sz=5+Math.random()*8;
-    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};`+
-      `animation-delay:${Math.random()*.7}s;animation-duration:${1.1+Math.random()*1.3}s;`+
-      `width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 2800);
-  }
-}
-
-// whale click → greet
-document.getElementById('whale-mascot').addEventListener('click',()=>{
-  const msgs=['안녕하세요! 🐋','열심히 하고 있어요! 💪','오늘도 화이팅! 🌟',
-              '한국어 잘 할 수 있어요! ✨','같이 공부해요! 📚'];
-  showWhaleSpeech(msgs[Math.floor(Math.random()*msgs.length)]);
-});
 
 </script>
 </body>

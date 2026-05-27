@@ -833,7 +833,6 @@ body {
       <button class="mbtn active" id="mb-list" onclick="setMode('list')">📋 목록 · List</button>
       <button class="mbtn" id="mb-card" onclick="setMode('card')">🃏 카드 · Cards</button>
       <button class="mbtn" id="mb-quiz" onclick="setMode('quiz')">❓ 퀴즈 · Quiz</button>
-      <button class="mbtn" id="mb-trivia" onclick="setMode('trivia')">🌟 K-트리비아 · Trivia</button>
     </div>
     <div id="lv" style=""></div>
     <div id="kv" style="display:none"></div>
@@ -1177,6 +1176,7 @@ function showCat(id) {
   document.getElementById('wel').style.display = 'none';
   document.getElementById('sv').style.display = 'none';
   document.getElementById('cv').style.display = '';
+  document.getElementById('tv').style.display  = 'none';
   document.getElementById('srch').value = '';
   if (CC) stopTimer(CC.id);
   CC = DATA.find(x=>x.id===id);
@@ -1191,6 +1191,20 @@ function showCat(id) {
   setMode('list');
 }
 
+
+// ── Trivia Category (sidebar item 12) ─────────────────────────────────────────
+function showTriviaCat() {
+  document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
+  const ci = document.getElementById('ci-trivia');
+  if (ci) ci.classList.add('active');
+  if (CC) { stopTimer(CC.id); CC = null; }
+  document.getElementById('wel').style.display = 'none';
+  document.getElementById('sv').style.display  = 'none';
+  document.getElementById('cv').style.display  = 'none';
+  document.getElementById('tv').style.display  = '';
+  showTvCats();
+}
+
 function setMode(m) {
   CM = m;
   ['list','card','quiz'].forEach(x=>{
@@ -1199,15 +1213,9 @@ function setMode(m) {
     btn.classList.toggle('active', x===m);
     btn.style.background = x===m&&CC ? CC.color : '';
   });
-  // trivia mode toggle
-  const tvDiv = document.getElementById('tv');
-  const tvBtn = document.getElementById('mb-trivia');
-  if (tvDiv) tvDiv.style.display = m==='trivia' ? '' : 'none';
-  if (tvBtn) { tvBtn.classList.toggle('active', m==='trivia'); tvBtn.style.background = m==='trivia'&&CC ? CC.color : ''; }
   if (m==='list') renderList();
   else if (m==='card') initCard();
   else if (m==='quiz') initQuiz();
-  else if (m==='trivia') showTvCats();
 }
 function setModeQuizSet(sf){ setMode('quiz'); setTimeout(()=>initQuiz(sf),0); }
 

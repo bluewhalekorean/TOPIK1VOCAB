@@ -805,6 +805,7 @@ body {
   text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;text-align:center}
 .wel-flow{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
 .wel-flow-row{display:flex;align-items:stretch;gap:0}
+.wel-flow-row-rev{display:flex;flex-direction:row-reverse;align-items:stretch;gap:0}
 .wel-step{background:#fff;border-radius:16px;padding:15px 13px 13px;
   box-shadow:0 3px 12px var(--shad);border:1.5px solid var(--brd2);
   display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;
@@ -821,14 +822,44 @@ body {
 .wel-arr-h{display:flex;align-items:center;justify-content:center;
   flex-shrink:0;width:28px}
 .wel-arr-h::after{content:'→';font-size:1.35rem;color:#a78bfa;font-weight:700}
-.wel-flow-turn{display:flex;justify-content:center;height:26px;align-items:center}
+.wel-arr-h-rev{display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;width:28px}
+.wel-arr-h-rev::after{content:'←';font-size:1.35rem;color:#a78bfa;font-weight:700}
+.wel-flow-turn{display:flex;justify-content:flex-end;height:26px;align-items:center;padding-right:2px}
 .wel-arr-v{font-size:1.5rem;color:#a78bfa;font-weight:700}
 @media(max-width:620px){
-  .wel-flow-row{flex-direction:column;gap:0}
+  .wel-flow-row,.wel-flow-row-rev{flex-direction:column;gap:0}
   .wel-arr-h{width:auto;height:22px}
   .wel-arr-h::after{content:'↓'}
-  .wel-flow-turn{height:22px}
+  .wel-arr-h-rev{width:auto;height:22px}
+  .wel-arr-h-rev::after{content:'↓'}
+  .wel-flow-turn{height:22px;justify-content:center}
 }
+.wel-eval{background:var(--surf);border-radius:18px;padding:16px 18px 14px;
+  border:1.5px solid var(--brd2);box-shadow:0 3px 12px var(--shad);margin-bottom:14px}
+.wel-eval-title{font-size:.76rem;font-weight:800;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:11px}
+.wel-eval-bar{height:14px;border-radius:7px;background:#f3f4f6;
+  position:relative;margin-bottom:6px;overflow:visible}
+.wel-eval-fill{height:100%;border-radius:7px;
+  background:linear-gradient(90deg,#6ee7b7,#34d399,#10b981);
+  transition:width .9s ease}
+.wel-eval-marker{position:absolute;top:-5px;width:3px;height:24px;
+  background:#4338ca;border-radius:2px;transform:translateX(-50%);
+  transition:left .9s ease;z-index:2}
+.wel-eval-marker::after{content:'▼';position:absolute;top:-13px;left:50%;
+  transform:translateX(-50%);font-size:.58rem;color:#4338ca}
+.wel-eval-scale{display:flex;justify-content:space-between;
+  font-size:.58rem;color:var(--tx3);padding:2px 2px 0;line-height:1.3}
+.wel-eval-scale span{text-align:center;min-width:42px}
+.wel-eval-status{font-size:.79rem;color:var(--tx);font-weight:600;
+  margin-bottom:9px;min-height:18px}
+.wel-eval-status .eval-pct{font-size:1.15rem;font-weight:900;color:var(--a)}
+.wel-eval-opinion{font-size:.72rem;color:var(--ad);line-height:1.6;
+  background:var(--surf3);border-radius:10px;padding:10px 13px;
+  border-left:3px solid #f59e0b}
+.wel-eval-opinion b{color:var(--tx)}
+
 .wel-tip{background:linear-gradient(135deg,var(--al),var(--surf2));
   border-radius:16px;padding:14px 18px;border-left:4px solid var(--a);
   font-size:.82rem;color:var(--ad);line-height:1.7;margin-top:4px}
@@ -931,27 +962,52 @@ body {
       </div>
     </div>
     <div class="wel-flow-turn"><span class="wel-arr-v">↓</span></div>
-    <div class="wel-flow-row">
+    <div class="wel-flow-row-rev">
       <div class="wel-step ws4">
         <div class="wel-step-num">STEP 4</div>
         <div class="wel-step-icon">❓</div>
         <div class="wel-step-ko">퀴즈로 실력 확인</div>
         <div class="wel-step-en">Switch to <b>Quiz mode</b> to test yourself. Scores are saved automatically.</div>
       </div>
-      <div class="wel-arr-h"></div>
+      <div class="wel-arr-h-rev"></div>
       <div class="wel-step ws5">
         <div class="wel-step-num">STEP 5</div>
         <div class="wel-step-icon">🔁</div>
         <div class="wel-step-ko">모르는 단어만 복습</div>
         <div class="wel-step-en">Use the <b>filter toggle</b> in card mode to focus only on words you're unsure about.</div>
       </div>
-      <div class="wel-arr-h"></div>
+      <div class="wel-arr-h-rev"></div>
       <div class="wel-step ws6">
         <div class="wel-step-num">BONUS</div>
         <div class="wel-step-icon">🌟</div>
         <div class="wel-step-ko">K-Culture Trivia 도전!</div>
         <div class="wel-step-en">Try <b>K-Culture Trivia</b> (★ in sidebar) for fun K-POP, K-Drama &amp; K-Food quizzes.</div>
       </div>
+    </div>
+  </div>
+
+  <div class="wel-eval">
+    <div class="wel-eval-title">📊 나의 실력 평가 · My Level Assessment</div>
+    <div class="wel-eval-bar-wrap">
+      <div class="wel-eval-bar">
+        <div class="wel-eval-fill" id="eval-fill" style="width:0%"></div>
+        <div class="wel-eval-marker" id="eval-marker" style="left:0%"></div>
+      </div>
+      <div class="wel-eval-scale">
+        <span>완전<br>초보</span>
+        <span>TOPIK<br>1급</span>
+        <span>TOPIK<br>2급</span>
+        <span>초중급<br>Elem.</span>
+        <span>3급<br>준비</span>
+      </div>
+    </div>
+    <div class="wel-eval-status" id="eval-status">로그인 후 확인 · Log in to see your level</div>
+    <div class="wel-eval-opinion">
+      💬 <b>선생님 코멘트</b>: 이 단어장의 334개를 모두 외우면 <b>TOPIK 1–2급</b> 기초 어휘 완성!
+      3급을 목표로 한다면 TTMIK L3–L5 단어(~2,000개)와 문법이 추가로 필요해요.
+      하지만 이 334개는 <b>가장 자주 쓰이는 핵심 어휘</b>라서 시작하기에 완벽합니다 🐋<br>
+      <span style="color:var(--tx3)">Teacher's note: These 334 words cover essential TOPIK Level 1–2 vocabulary.
+      TOPIK Level 3 requires ~2,000 words (L3–L5). These are the most essential first words to master!</span>
     </div>
   </div>
 
@@ -1123,6 +1179,7 @@ auth.onAuthStateChanged(async user => {
     await loadGameData();
     updateLastSeen();
     renderSidebar();
+    updateEvalBar();
   } else {
     currentUser = null; PROG = {};
     document.getElementById('auth-overlay').style.display = 'flex';
@@ -1291,8 +1348,12 @@ function getMastery(catId, no) {
   return MASTERY[catId+'_'+no] ?? 0;
 }
 function setMastery(catId, no, lv) {
-  MASTERY[catId+'_'+no] = lv;
-  try { localStorage.setItem('bwk_mastery', JSON.stringify(MASTERY)); } catch(e){}
+  const key=catId+'_'+no;
+  if((MASTERY[key]??0)===lv)return; // no change, skip
+  MASTERY[key]=lv;
+  try{localStorage.setItem('bwk_mastery',JSON.stringify(MASTERY));}catch(e){}
+  updateSidebarBar(catId);
+  updateEvalBar();
 }
 function masteryCount(catId, words) {
   const cnt = [0,0,0];
@@ -1345,6 +1406,37 @@ function confirmCard() {
   // auto-advance after 600ms
   setTimeout(()=>cardNav(1), 600);
 }
+function updateEvalBar() {
+  let done=0,total=0;
+  DATA.forEach(cat=>cat.words.forEach(w=>{total++;if(getMastery(cat.id,w.no)===2)done++;}));
+  const pct=total?Math.round(done/total*100):0;
+  const fill=document.getElementById('eval-fill');
+  const marker=document.getElementById('eval-marker');
+  const status=document.getElementById('eval-status');
+  if(!fill)return;
+  fill.style.width=pct+'%';
+  marker.style.left=pct+'%';
+  let lvTxt='';
+  if(pct<10) lvTxt='완전 초보 · Beginner — 첫 카테고리부터 시작해 보세요!';
+  else if(pct<30) lvTxt='TOPIK 1급 준비 중 · Level 1 Prep — 잘하고 있어요! Keep going!';
+  else if(pct<60) lvTxt='TOPIK 1급 수준 · Level 1 — 기초가 탄탄해지고 있어요!';
+  else if(pct<85) lvTxt='TOPIK 2급 수준 · Level 2 — 어휘력이 많이 늘었어요!';
+  else lvTxt='TOPIK 2급+ 완성 · Level 2+ — 대단해요! 3급에 도전해 보세요! 🎉';
+  status.innerHTML=`<span class="eval-pct">${done}</span> / ${total} 단어 암기완료 (${pct}%) — ${lvTxt}`;
+}
+
+function updateSidebarBar(catId) {
+  const cat=DATA.find(x=>x.id===catId); if(!cat)return;
+  const el=document.querySelector('#ci'+catId+' .cprog'); if(!el)return;
+  const total=cat.words.length; let m0=0,m1=0,m2=0;
+  cat.words.forEach(w=>{const lv=getMastery(cat.id,w.no);if(lv===2)m2++;else if(lv===1)m1++;else m0++;});
+  const p2=Math.round(m2/total*100),p1=Math.round(m1/total*100),p0=100-p2-p1;
+  el.style.display='flex';
+  el.innerHTML=`<div style="width:${p2}%;background:#10b981;border-radius:2px 0 0 2px;height:100%"></div>`
+    +`<div style="width:${p1}%;background:#f59e0b;height:100%"></div>`
+    +`<div style="width:${p0}%;background:#e5e7eb;border-radius:0 2px 2px 0;height:100%"></div>`;
+}
+
 function showWelcome() {
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   if (CC) { stopTimer(CC.id); CC = null; }
@@ -1352,17 +1444,23 @@ function showWelcome() {
   document.getElementById('sv').style.display  = 'none';
   document.getElementById('cv').style.display  = 'none';
   document.getElementById('tv').style.display  = 'none';
+  updateEvalBar();
 }
 
 function renderSidebar() {
   document.getElementById('clist').innerHTML = DATA.map(c => {
     const {done,sets} = catDone(c);
-    const pct = sets ? Math.round(done/sets*100) : 0;
     const badge = done===sets&&sets>0
       ? '<span style="font-size:.65rem;color:#16a34a;font-weight:700">✓완료</span>'
       : done>0 ? `<span style="font-size:.65rem;color:var(--a);font-weight:700">${done}/${sets}</span>` : '';
-    const prog = done>0
-      ? `<div class="cprog"><div class="cprogf" style="width:${pct}%;background:${c.color}"></div></div>` : '';
+    // mastery 3-segment bar
+    const total=c.words.length; let m0=0,m1=0,m2=0;
+    c.words.forEach(w=>{const lv=getMastery(c.id,w.no);if(lv===2)m2++;else if(lv===1)m1++;else m0++;});
+    const p2=Math.round(m2/total*100),p1=Math.round(m1/total*100),p0=100-p2-p1;
+    const prog=`<div class="cprog" style="display:flex">`
+      +`<div style="width:${p2}%;background:#10b981;border-radius:2px 0 0 2px;height:100%"></div>`
+      +`<div style="width:${p1}%;background:#f59e0b;height:100%"></div>`
+      +`<div style="width:${p0}%;background:#e5e7eb;border-radius:0 2px 2px 0;height:100%"></div></div>`;
     return `<div class="ci" id="ci${c.id}" style="--cc:${c.color}" onclick="showCat(${c.id})">
       <div class="cn">${c.id}</div>
       <div class="cl">
@@ -1761,14 +1859,22 @@ function doSearch(q){
 async function openMyPage(){
   const overlay=document.getElementById('mp-overlay');
   overlay.classList.add('open');
+  // Always reset to Overview tab
+  document.querySelectorAll('.mptab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.querySelectorAll('.mp-panel').forEach((p,i)=>p.classList.toggle('active',i===0));
   const u=currentUser;
   const initials=(u.displayName||u.email||'?')[0].toUpperCase();
   document.getElementById('mp-avatar').textContent=initials;
   document.getElementById('mp-name').textContent=u.displayName||u.email.split('@')[0];
   document.getElementById('mp-email').textContent=u.email;
 
-  // Use in-memory PROG for sets (always up-to-date)
-  // Only fetch Firestore for: streak/time (userData) and quiz log
+  // Render overview immediately with in-memory data
+  renderMpOverview(PROG, {}, {streak:GAME_DATA.maxStreak||0});
+  renderMpCats(PROG);
+  renderMpGram(PROG);
+  renderMpBadges();
+
+  // Fetch Firestore in background and re-render overview
   let timeSpent={}, userData={}, logs=[];
   try {
     const pd=await db.collection('progress').doc(u.uid).get();
@@ -1785,9 +1891,6 @@ async function openMyPage(){
   } catch(e){}
 
   renderMpOverview(PROG, timeSpent, userData);
-  renderMpCats(PROG);
-  renderMpGram(PROG);
-  renderMpBadges();
   renderMpLog(logs);
 }
 function closeMyPage(){ document.getElementById('mp-overlay').classList.remove('open'); }
@@ -1954,14 +2057,43 @@ const LEVELS = [
 ];
 
 const BADGES = [
-  {id:'first_quiz', icon:'🎯', name:'첫 발걸음',    nameEn:'First Step',      desc:'첫 퀴즈 세트 완료! · First quiz done!'},
-  {id:'perfect',    icon:'💯', name:'만점 달성',    nameEn:'Perfect Score',   desc:'퀴즈 100% 달성! · Scored 100%!'},
-  {id:'streak3',    icon:'🔥', name:'3일 연속',     nameEn:'3-Day Streak',    desc:'3일 연속 학습! · 3 days in a row!'},
-  {id:'streak7',    icon:'🌊', name:'7일 연속',     nameEn:'7-Day Streak',    desc:'7일 연속 학습! · 7 days in a row!'},
-  {id:'words100',   icon:'📚', name:'단어 탐험가',  nameEn:'Word Explorer',   desc:'100개 단어 학습! · Studied 100 words!'},
-  {id:'level5',     icon:'⭐', name:'레벨 5 달성',  nameEn:'Level 5 Reached', desc:'레벨 5 달성! · Reached Level 5!'},
-  {id:'catdone',    icon:'🏆', name:'카테고리 완성',nameEn:'Category Complete',desc:'카테고리 하나 완성! · Completed a category!'},
-  {id:'legend',     icon:'🐋', name:'TOPIK 전설',   nameEn:'TOPIK Legend',    desc:'최고 레벨 달성! · Reached max level!'}
+  // ─ Quiz ─
+  {id:'first_quiz',  icon:'🎯', name:'첫 발걸음',     nameEn:'First Step',        desc:'첫 퀴즈 세트 완료! · First quiz done!'},
+  {id:'perfect',     icon:'💯', name:'만점 달성',     nameEn:'Perfect Score',     desc:'퀴즈 100% 달성! · Scored 100%!'},
+  {id:'perfect3',    icon:'🌟', name:'3회 만점',      nameEn:'Triple Perfect',    desc:'만점 3회 달성! · Scored 100% three times!'},
+  {id:'perfect10',   icon:'✨', name:'만점 달인',     nameEn:'Perfect Master',    desc:'만점 10회 달성! · Scored 100% ten times!'},
+  {id:'quiz10',      icon:'📝', name:'퀴즈 10세트',   nameEn:'Quiz Streak 10',   desc:'퀴즈 10세트 완료! · 10 quiz sets done!'},
+  {id:'quiz30',      icon:'📊', name:'퀴즈 30세트',   nameEn:'Quiz Streak 30',   desc:'퀴즈 30세트 완료! · 30 quiz sets done!'},
+  {id:'quiz50',      icon:'🎓', name:'퀴즈 마스터',   nameEn:'Quiz Master',      desc:'퀴즈 50세트 완료! · 50 quiz sets done!'},
+  // ─ Words Studied ─
+  {id:'words50',     icon:'📖', name:'50단어 탐험',   nameEn:'50 Words',         desc:'50개 단어 학습! · Studied 50 words!'},
+  {id:'words100',    icon:'📚', name:'단어 탐험가',   nameEn:'Word Explorer',    desc:'100개 단어 학습! · Studied 100 words!'},
+  {id:'words200',    icon:'📕', name:'단어 박사',     nameEn:'Word Doctor',      desc:'200개 단어 학습! · Studied 200 words!'},
+  {id:'words_all',   icon:'📗', name:'단어 완전정복', nameEn:'Word Conqueror',   desc:'전체 334개 학습! · Studied all 334 words!'},
+  // ─ Mastery ─
+  {id:'mastery10',   icon:'🌱', name:'새싹 학습자',   nameEn:'Seedling',         desc:'단어 10개 완전 암기! · Mastered 10 words!'},
+  {id:'mastery50',   icon:'🌿', name:'성장 학습자',   nameEn:'Growing',          desc:'단어 50개 완전 암기! · Mastered 50 words!'},
+  {id:'mastery100',  icon:'🌳', name:'단어 숲',       nameEn:'Word Forest',      desc:'단어 100개 완전 암기! · Mastered 100 words!'},
+  {id:'mastery200',  icon:'🏰', name:'단어 왕국',     nameEn:'Word Kingdom',     desc:'단어 200개 완전 암기! · Mastered 200 words!'},
+  {id:'mastery_all', icon:'👑', name:'단어 황제',     nameEn:'Word Emperor',     desc:'전체 334개 완전 암기! · Mastered all 334!'},
+  // ─ Streak ─
+  {id:'streak3',     icon:'🔥', name:'3일 연속',      nameEn:'3-Day Streak',     desc:'3일 연속 학습! · 3 days in a row!'},
+  {id:'streak7',     icon:'🌊', name:'7일 연속',      nameEn:'7-Day Streak',     desc:'7일 연속 학습! · 7 days in a row!'},
+  {id:'streak14',    icon:'⚡', name:'2주 연속',      nameEn:'2-Week Streak',    desc:'14일 연속 학습! · 14 days in a row!'},
+  {id:'streak30',    icon:'💎', name:'1달 연속',      nameEn:'1-Month Streak',   desc:'30일 연속 학습! · 30 days in a row!'},
+  // ─ Level ─
+  {id:'level3',      icon:'🥉', name:'레벨 3 달성',   nameEn:'Level 3',          desc:'레벨 3 달성! · Reached Level 3!'},
+  {id:'level5',      icon:'⭐', name:'레벨 5 달성',   nameEn:'Level 5',          desc:'레벨 5 달성! · Reached Level 5!'},
+  {id:'level7',      icon:'🥇', name:'레벨 7 달성',   nameEn:'Level 7',          desc:'레벨 7 달성! · Reached Level 7!'},
+  {id:'xp500',       icon:'💫', name:'XP 500 달성',   nameEn:'XP 500',           desc:'경험치 500 달성! · Earned 500 XP!'},
+  // ─ Categories ─
+  {id:'catdone',     icon:'🏆', name:'카테고리 완성', nameEn:'Category Done',    desc:'카테고리 1개 완성! · Completed a category!'},
+  {id:'cat3',        icon:'🎪', name:'3 카테고리',    nameEn:'3 Categories',     desc:'3개 카테고리 완성! · Completed 3 categories!'},
+  {id:'cat8',        icon:'🎭', name:'절반 정복',     nameEn:'Halfway Hero',     desc:'8개 카테고리 완성! · Completed 8 categories!'},
+  {id:'cat_all',     icon:'🌏', name:'전체 정복',     nameEn:'All Categories',   desc:'모든 카테고리 완성! · All categories done!'},
+  // ─ Special ─
+  {id:'topik_ready', icon:'📋', name:'TOPIK 준비완료',nameEn:'TOPIK Ready',     desc:'200단어 암기+퀴즈 20세트! · 200 mastered + 20 quizzes!'},
+  {id:'legend',      icon:'🐋', name:'TOPIK 전설',    nameEn:'TOPIK Legend',    desc:'최고 레벨 달성! · Reached max level!'}
 ];
 
 let GAME_DATA = {xp:0,level:1,badges:[],quizzes:0,perfects:0,wordsStudied:0,maxStreak:0,lastLoginDay:''};
@@ -2025,11 +2157,23 @@ function checkBadges() {
     for(let i=0;i<total;i++) if(PROG[String(c.id)+'_'+i]) done++;
     if(done===total && total>0) catsDone++;
   });
+  let masteryDone=0;
+  DATA.forEach(cat=>cat.words.forEach(w=>{if(getMastery(cat.id,w.no)===2)masteryDone++;}));
   const cond = {
-    first_quiz:(g.quizzes||0)>=1, perfect:(g.perfects||0)>=1,
-    streak3:(g.maxStreak||0)>=3,  streak7:(g.maxStreak||0)>=7,
-    words100:(g.wordsStudied||0)>=100, level5:(g.level||1)>=5,
-    catdone:catsDone>=1, legend:(g.level||1)>=10
+    first_quiz:(g.quizzes||0)>=1,
+    perfect:(g.perfects||0)>=1, perfect3:(g.perfects||0)>=3, perfect10:(g.perfects||0)>=10,
+    quiz10:(g.quizzes||0)>=10, quiz30:(g.quizzes||0)>=30, quiz50:(g.quizzes||0)>=50,
+    words50:(g.wordsStudied||0)>=50, words100:(g.wordsStudied||0)>=100,
+    words200:(g.wordsStudied||0)>=200, words_all:(g.wordsStudied||0)>=334,
+    streak3:(g.maxStreak||0)>=3, streak7:(g.maxStreak||0)>=7,
+    streak14:(g.maxStreak||0)>=14, streak30:(g.maxStreak||0)>=30,
+    level3:(g.level||1)>=3, level5:(g.level||1)>=5, level7:(g.level||1)>=7,
+    xp500:(g.xp||0)>=500,
+    catdone:catsDone>=1, cat3:catsDone>=3, cat8:catsDone>=8, cat_all:catsDone>=16,
+    mastery10:masteryDone>=10, mastery50:masteryDone>=50, mastery100:masteryDone>=100,
+    mastery200:masteryDone>=200, mastery_all:masteryDone>=334,
+    topik_ready:masteryDone>=200&&(g.quizzes||0)>=20,
+    legend:(g.level||1)>=10
   };
   for (const b of BADGES) {
     if (!g.badges.includes(b.id) && cond[b.id]) {

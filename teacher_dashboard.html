@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>선생님 대시보드 · Blue Whale Korean</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Segoe UI',sans-serif;
+  background:#eef2f7;color:#222;min-height:100vh}
+
+/* Header */
+#hdr{background:linear-gradient(135deg,#1a3a5c,#1e4d7b);color:#fff;
+  padding:14px 24px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);position:sticky;top:0;z-index:100}
+#hdr h1{font-size:1rem;font-weight:700}
+#hdr .sub{font-size:.72rem;opacity:.7}
+#user-info{margin-left:auto;font-size:.78rem;opacity:.8}
+.hbtn{padding:6px 14px;border-radius:14px;border:1.5px solid rgba(255,255,255,.4);
+  background:transparent;color:#fff;font-size:.78rem;cursor:pointer}
+.hbtn:hover{background:rgba(255,255,255,.15)}
+
+/* Login overlay */
+#login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;
+  display:flex;align-items:center;justify-content:center}
+#login-box{background:#fff;border-radius:16px;padding:36px 32px;width:320px;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);text-align:center}
+#login-box h2{font-size:1.1rem;color:#1a3a5c;margin-bottom:16px}
+.linput{width:100%;padding:10px 14px;border:1.5px solid #d0d8e8;border-radius:8px;
+  font-size:.9rem;margin-bottom:12px;outline:none}
+.linput:focus{border-color:#4472C4}
+.lbtn{width:100%;padding:11px;border-radius:8px;border:none;cursor:pointer;
+  font-size:.9rem;font-weight:700;background:#4472C4;color:#fff;margin-top:4px}
+.lbtn:hover{background:#1a3a5c}
+#login-err{color:#e53935;font-size:.8rem;min-height:18px;margin-bottom:6px}
+
+/* Main */
+#main{padding:24px;max-width:1100px;margin:0 auto}
+
+/* Stats bar */
+#stats-bar{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat-card{background:#fff;border-radius:12px;padding:16px 22px;flex:1;min-width:130px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);text-align:center}
+.stat-card .num{font-size:1.8rem;font-weight:800;color:#1a3a5c}
+.stat-card .lbl{font-size:.75rem;color:#888;margin-top:2px}
+
+/* Student list */
+#student-list{display:flex;flex-direction:column;gap:12px}
+.student-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);
+  overflow:hidden;transition:.15s}
+.student-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.sc-header{display:flex;align-items:center;padding:14px 20px;cursor:pointer;gap:14px}
+.sc-avatar{width:38px;height:38px;border-radius:50%;background:#4472C4;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:1rem;font-weight:700;flex-shrink:0}
+.sc-name{font-weight:700;font-size:.95rem;color:#1a3a5c}
+.sc-email{font-size:.75rem;color:#888}
+.sc-meta{margin-left:auto;text-align:right;font-size:.75rem;color:#888}
+.sc-meta .last{color:#aaa}
+.sc-overall{display:flex;align-items:center;gap:10px}
+.ov-bar{width:100px;height:8px;background:#e6ecf5;border-radius:4px;overflow:hidden}
+.ov-fill{height:100%;border-radius:4px;background:#4472C4;transition:.4s}
+.ov-pct{font-size:.8rem;font-weight:700;color:#4472C4;min-width:36px;text-align:right}
+
+/* Detail panel */
+.sc-detail{display:none;border-top:1px solid #edf1f8;padding:16px 20px;background:#f8fafc}
+.sc-detail.open{display:block}
+.detail-title{font-size:.8rem;font-weight:700;color:#667;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;
+  margin-bottom:16px}
+.cat-tile{border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.cat-tile-hdr{padding:8px 12px;color:#fff;font-size:.8rem;font-weight:700}
+.cat-tile-body{padding:8px 12px;background:#fff}
+.set-row{display:flex;align-items:center;justify-content:space-between;
+  padding:3px 0;font-size:.75rem;border-bottom:1px solid #f0f4f8}
+.set-row:last-child{border-bottom:none}
+.set-score{font-weight:700;color:#4472C4}
+.set-score.perfect{color:#4caf50}
+.set-pct-bar{width:50px;height:5px;background:#e6ecf5;border-radius:3px;
+  overflow:hidden;display:inline-block;vertical-align:middle;margin-left:6px}
+.set-pct-fill{height:100%;border-radius:3px}
+.set-attempts{color:#aaa;font-size:.7rem}
+.cat-progress{font-size:.7rem;color:#888;margin-top:4px}
+.cat-prog-bar{width:100%;height:5px;background:#e6ecf5;border-radius:3px;margin-top:3px;overflow:hidden}
+.cat-prog-fill{height:100%;border-radius:3px}
+
+/* Time section */
+.time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;
+  margin-bottom:16px}
+.time-row{background:#fff;border-radius:8px;padding:8px 12px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.8rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.time-row .cat-name{color:#445;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.time-row .t{font-weight:700;color:#1a3a5c}
+
+/* Quiz log */
+.log-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.log-table th{padding:7px 10px;background:#f0f4f8;color:#667;font-weight:700;text-align:left;border-bottom:2px solid #e0e8f0}
+.log-table td{padding:6px 10px;border-bottom:1px solid #edf1f8;color:#444}
+.log-table tr:hover td{background:#f6f9ff}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700}
+.badge-good{background:#e8f5e9;color:#2e7d32}
+.badge-ok{background:#fff8e1;color:#f57c00}
+.badge-low{background:#fce4ec;color:#c62828}
+
+/* Search / filter */
+#search-row{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+#search-input{padding:8px 16px;border-radius:20px;border:1.5px solid #d0d8e8;
+  font-size:.85rem;width:240px;outline:none}
+#search-input:focus{border-color:#4472C4}
+.filter-btn{padding:6px 14px;border-radius:16px;border:1.5px solid #d0d8e8;
+  background:#fff;font-size:.8rem;cursor:pointer;color:#445}
+.filter-btn.active{background:#4472C4;color:#fff;border-color:#4472C4}
+#refresh-btn{padding:6px 14px;border-radius:16px;border:1.5px solid #4472C4;
+  background:#4472C4;color:#fff;font-size:.8rem;cursor:pointer;margin-left:auto}
+
+/* No data */
+.empty{text-align:center;padding:48px;color:#aaa;font-size:.9rem}
+.loading{text-align:center;padding:48px;color:#888;font-size:.9rem}
+
+/* Tabs in detail */
+.dtabs{display:flex;gap:6px;margin-bottom:12px}
+.dtab{padding:5px 14px;border-radius:14px;font-size:.78rem;cursor:pointer;
+  border:1.5px solid #d0d8e8;background:#fff;color:#445}
+.dtab.active{background:#4472C4;color:#fff;border-color:#4472C4}
+</style>
+</head>
+
+<body>
+
+<!-- Login overlay (teacher only) -->
+<div id="login-overlay">
+  <div id="login-box">
+    <h2>🔒 선생님 대시보드</h2>
+    <p style="font-size:.8rem;color:#888;margin-bottom:16px">선생님 계정으로 로그인하세요</p>
+    <div id="login-err"></div>
+    <input id="lin-email" class="linput" type="email" placeholder="이메일">
+    <input id="lin-pw" class="linput" type="password" placeholder="비밀번호"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">로그인</button>
+  </div>
+</div>
+
+<div id="hdr">
+  <div>
+    <div class="sub">Blue Whale Korean · TTMIK L1+L2</div>
+    <h1>📊 선생님 대시보드</h1>
+  </div>
+  <span id="user-info"></span>
+  <button class="hbtn" onclick="loadStudents()">🔄 새로고침</button>
+  <button class="hbtn" onclick="doLogout()">로그아웃</button>
+</div>
+
+<div id="main">
+  <!-- Stats -->
+  <div id="stats-bar">
+    <div class="stat-card"><div class="num" id="st-total">-</div><div class="lbl">전체 학생</div></div>
+    <div class="stat-card"><div class="num" id="st-active">-</div><div class="lbl">이번 주 활동</div></div>
+    <div class="stat-card"><div class="num" id="st-sets">-</div><div class="lbl">완료된 Set (합계)</div></div>
+    <div class="stat-card"><div class="num" id="st-avg">-</div><div class="lbl">평균 진도율</div></div>
+  </div>
+
+  <!-- Search row -->
+  <div id="search-row">
+    <input id="search-input" type="text" placeholder="🔍 학생 이름 / 이메일 검색..."
+      oninput="filterStudents(this.value)">
+    <button class="filter-btn active" id="sort-recent" onclick="setSortMode('recent',this)">최근 접속순</button>
+    <button class="filter-btn" id="sort-progress" onclick="setSortMode('progress',this)">진도율 높은 순</button>
+    <button class="filter-btn" id="sort-name" onclick="setSortMode('name',this)">이름순</button>
+  </div>
+
+  <div id="student-list"><div class="loading">⏳ 데이터를 불러오는 중...</div></div>
+</div>
+
+<script>
+// ── Firebase Config (메인 앱과 동일하게 설정하세요) ────────────────────
+const FB_CONFIG = {
+  apiKey:            "AIzaSyBm5GlSKz3B-RFYs-t5e28A-NCoXVbbIU4",
+  authDomain:        "topik1-vocab.firebaseapp.com",
+  projectId:         "topik1-vocab",
+  storageBucket:     "topik1-vocab.firebasestorage.app",
+  messagingSenderId: "716264226677",
+  appId:             "1:716264226677:web:c693bb3498e409ab4cdd3c"
+};
+const TEACHER_EMAIL = "bluewhalekorean@gmail.com";
+
+firebase.initializeApp(FB_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// Category info (names + set counts)
+const CATS = [
+  {id:1, ko:"🙏 인사 표현",    sets:2, color:"#6366f1"},
+  {id:2, ko:"🎒 기본 명사",    sets:3, color:"#8b5cf6"},
+  {id:3, ko:"🍜 음식 & 맛",   sets:2, color:"#ec4899"},
+  {id:4, ko:"🏃 동사 (L1)",   sets:3, color:"#f59e0b"},
+  {id:5, ko:"🔢 숫자 & 날짜", sets:3, color:"#10b981"},
+  {id:6, ko:"🕐 시간 & 장소", sets:3, color:"#0ea5e9"},
+  {id:7, ko:"⚡ 동사 (L2)",   sets:3, color:"#f97316"},
+  {id:8, ko:"📦 명사 (L2)",   sets:3, color:"#14b8a6"},
+  {id:9, ko:"✨ 형용사",       sets:3, color:"#a855f7"},
+  {id:10,ko:"📅 요일 & 날짜", sets:3, color:"#06b6d4"},
+  {id:11,ko:"🍽️ 식당 표현",  sets:2, color:"#f97316"},
+  {id:12,ko:"🗺️ 길 묻기",    sets:2, color:"#10b981"},
+  {id:13,ko:"🤝 친해지기",    sets:2, color:"#8b5cf6"},
+  {id:14,ko:"💕 데이트",       sets:2, color:"#ec4899"},
+  {id:15,ko:"💼 비즈니스",    sets:2, color:"#1d4ed8"},
+  {id:16,ko:"🎬 드라마 & 감탄",sets:2,color:"#7c3aed"},
+];
+const TOTAL_SETS = CATS.reduce((s,c)=>s+c.sets,0);
+
+let allStudents = [];
+let sortMode = 'recent';
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    if (user.email !== TEACHER_EMAIL) {
+      document.getElementById('login-err').textContent = '선생님 계정만 접근할 수 있습니다.';
+      await auth.signOut(); return;
+    }
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('user-info').textContent = user.displayName || user.email;
+    loadStudents();
+  } else {
+    document.getElementById('login-overlay').style.display = 'flex';
+  }
+});
+
+async function doLogin() {
+  const email = document.getElementById('lin-email').value.trim();
+  const pw    = document.getElementById('lin-pw').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  try { await auth.signInWithEmailAndPassword(email, pw); }
+  catch(e) {
+    const msgs = {
+      'auth/user-not-found':'이메일을 찾을 수 없습니다.',
+      'auth/wrong-password':'비밀번호가 틀렸습니다.',
+      'auth/invalid-email':'올바른 이메일이 아닙니다.'
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+  }
+}
+async function doLogout() { await auth.signOut(); }
+
+// ── Load all students ─────────────────────────────────────────────────────────
+async function loadStudents() {
+  document.getElementById('student-list').innerHTML = '<div class="loading">⏳ 불러오는 중...</div>';
+  try {
+    const snap = await db.collection('progress').get();
+    allStudents = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.email !== TEACHER_EMAIL) {
+        allStudents.push({ uid: doc.id, ...d });
+      }
+    });
+    updateStats();
+    renderStudents(allStudents);
+  } catch(e) {
+    document.getElementById('student-list').innerHTML =
+      '<div class="empty">⚠️ 데이터를 불러오지 못했습니다: ' + e.message + '</div>';
+  }
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const now = Date.now();
+  const weekAgo = now - 7*24*3600*1000;
+  let active = 0, totalSets = 0, totalPct = 0;
+  allStudents.forEach(s => {
+    const ls = s.lastSeen?.toMillis?.() || 0;
+    if (ls > weekAgo) active++;
+    const sets = Object.keys(s.sets || {}).length;
+    totalSets += sets;
+    totalPct += TOTAL_SETS > 0 ? Math.round(sets / TOTAL_SETS * 100) : 0;
+  });
+  document.getElementById('st-total').textContent = allStudents.length;
+  document.getElementById('st-active').textContent = active;
+  document.getElementById('st-sets').textContent = totalSets;
+  document.getElementById('st-avg').textContent =
+    allStudents.length ? Math.round(totalPct / allStudents.length) + '%' : '-';
+}
+
+// ── Render students ───────────────────────────────────────────────────────────
+function setSortMode(mode, btn) {
+  sortMode = mode;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterStudents(document.getElementById('search-input').value);
+}
+
+function filterStudents(q) {
+  q = q.toLowerCase();
+  let list = allStudents.filter(s =>
+    (s.displayName||'').toLowerCase().includes(q) ||
+    (s.email||'').toLowerCase().includes(q)
+  );
+  list = sortStudents(list);
+  renderStudents(list);
+}
+
+function sortStudents(list) {
+  if (sortMode === 'recent') {
+    return [...list].sort((a,b) => (b.lastSeen?.toMillis?.()||0) - (a.lastSeen?.toMillis?.()||0));
+  } else if (sortMode === 'progress') {
+    return [...list].sort((a,b) => {
+      const pa = Object.keys(a.sets||{}).length;
+      const pb = Object.keys(b.sets||{}).length;
+      return pb - pa;
+    });
+  } else {
+    return [...list].sort((a,b) => (a.displayName||a.email||'').localeCompare(b.displayName||b.email||''));
+  }
+}
+
+function renderStudents(list) {
+  if (!list.length) {
+    document.getElementById('student-list').innerHTML = '<div class="empty">학생 데이터가 없습니다.</div>';
+    return;
+  }
+  document.getElementById('student-list').innerHTML = list.map(s => studentCard(s)).join('');
+}
+
+function studentCard(s) {
+  const completedSets = Object.keys(s.sets || {}).length;
+  const pct = Math.round(completedSets / TOTAL_SETS * 100);
+  const name = s.displayName || s.email || '(이름 없음)';
+  const initials = (name[0]||'?').toUpperCase();
+  const lastSeen = s.lastSeen ? fmtDate(s.lastSeen.toMillis()) : '기록 없음';
+
+  // Per-category completion for mini icons
+  const catDots = CATS.slice(0,10).map(c => {
+    const done = Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length;
+    const catPct = c.sets ? Math.round(done/c.sets*100) : 0;
+    return `<span title="${c.ko}: ${done}/${c.sets}" style="display:inline-block;
+      width:8px;height:8px;border-radius:50%;background:${catPct===100?c.color:catPct>0?c.color+'66':'#e0e8f0'};
+      margin:1px"></span>`;
+  }).join('');
+
+  return `<div class="student-card" id="sc_${s.uid}">
+    <div class="sc-header" onclick="toggleDetail('${s.uid}')">
+      <div class="sc-avatar" style="background:${colorFromEmail(s.email)}">${initials}</div>
+      <div>
+        <div class="sc-name">${name}</div>
+        <div class="sc-email">${s.email||''}</div>
+      </div>
+      <div style="margin-left:16px">${catDots}</div>
+      <div class="sc-meta">
+        <div class="sc-overall">
+          <div class="ov-bar"><div class="ov-fill" style="width:${pct}%"></div></div>
+          <div class="ov-pct">${pct}%</div>
+        </div>
+        <div class="last">마지막 접속: ${lastSeen}</div>
+      </div>
+    </div>
+    <div class="sc-detail" id="detail_${s.uid}"></div>
+  </div>`;
+}
+
+// ── Detail panel ──────────────────────────────────────────────────────────────
+async function toggleDetail(uid) {
+  const el = document.getElementById('detail_' + uid);
+  if (el.classList.contains('open')) { el.classList.remove('open'); return; }
+  el.innerHTML = '<div style="padding:8px;color:#888;font-size:.8rem">⏳ 불러오는 중...</div>';
+  el.classList.add('open');
+
+  const s = allStudents.find(x => x.uid === uid);
+
+  // Load quiz log
+  let logs = [];
+  try {
+    const logSnap = await db.collection('progress').doc(uid).collection('quizLog')
+      .orderBy('timestamp', 'desc').limit(30).get();
+    logSnap.forEach(d => logs.push(d.data()));
+  } catch(e) {}
+
+  el.innerHTML = renderDetail(s, logs);
+}
+
+function renderDetail(s, logs) {
+  const name = s.displayName || s.email || '';
+  const totalSecs = Object.values(s.timeSpent||{}).reduce((a,b)=>a+b, 0);
+
+  // Tab buttons
+  let html = `
+    <div class="dtabs">
+      <button class="dtab active" onclick="switchTab(event,'tab-cat-${s.uid}','${s.uid}')">카테고리별 진도</button>
+      <button class="dtab" onclick="switchTab(event,'tab-time-${s.uid}','${s.uid}')">학습 시간</button>
+      <button class="dtab" onclick="switchTab(event,'tab-log-${s.uid}','${s.uid}')">퀴즈 기록</button>
+    </div>
+  `;
+
+  // Tab: Category progress
+  html += `<div id="tab-cat-${s.uid}" class="dtab-content">`;
+  html += `<div class="cat-grid">`;
+  CATS.forEach(c => {
+    const setData = Array.from({length:c.sets}, (_,i) => {
+      const key = c.id + '_' + i;
+      const val = s.sets?.[key];
+      return val ? { score: val.score||val, pct: val.pct||0, attempts: val.attempts||1 } : null;
+    });
+    const done = setData.filter(Boolean).length;
+    const catPct = Math.round(done / c.sets * 100);
+
+    html += `<div class="cat-tile">
+      <div class="cat-tile-hdr" style="background:${c.color}">${c.ko} (${done}/${c.sets})</div>
+      <div class="cat-tile-body">`;
+    setData.forEach((sd, i) => {
+      if (sd) {
+        const clr = sd.pct >= 90 ? '#4caf50' : sd.pct >= 60 ? '#ff9800' : '#e53935';
+        html += `<div class="set-row">
+          <span>Set ${i+1}</span>
+          <span>
+            <span class="set-score${sd.pct>=90?' perfect':''}" style="color:${clr}">${sd.score}</span>
+            <span class="set-pct-bar"><span class="set-pct-fill" style="width:${sd.pct}%;background:${clr}"></span></span>
+            <span class="set-attempts">(${sd.attempts}회)</span>
+          </span>
+        </div>`;
+      } else {
+        html += `<div class="set-row"><span>Set ${i+1}</span><span style="color:#ccc">미완료</span></div>`;
+      }
+    });
+    html += `<div class="cat-prog-bar"><div class="cat-prog-fill" style="width:${catPct}%;background:${c.color}"></div></div>`;
+    html += `</div></div>`;
+  });
+  html += `</div></div>`;
+
+  // Tab: Time spent
+  html += `<div id="tab-time-${s.uid}" class="dtab-content" style="display:none">`;
+  if (totalSecs < 5) {
+    html += '<div style="color:#aaa;font-size:.85rem;padding:8px">학습 시간 기록이 없습니다.</div>';
+  } else {
+    const timeEntries = Object.entries(s.timeSpent||{})
+      .sort((a,b) => b[1]-a[1]);
+    html += `<div class="time-grid">`;
+    timeEntries.forEach(([cid, secs]) => {
+      const cat = CATS.find(c => c.id == cid);
+      const catName = cat ? cat.ko : '카테고리 ' + cid;
+      html += `<div class="time-row">
+        <span class="cat-name">${catName}</span>
+        <span class="t">${fmtSecs(secs)}</span>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div style="font-size:.8rem;color:#888;margin-top:8px">총 학습 시간: <strong>${fmtSecs(totalSecs)}</strong></div>`;
+  }
+  html += `</div>`;
+
+  // Tab: Quiz log
+  html += `<div id="tab-log-${s.uid}" class="dtab-content" style="display:none">`;
+  if (!logs.length) {
+    html += '<div style="color:#aaa;font-size:.85rem;padding:8px">퀴즈 기록이 없습니다.</div>';
+  } else {
+    html += `<table class="log-table">
+      <thead><tr><th>카테고리</th><th>Set</th><th>점수</th><th>날짜/시간</th></tr></thead>
+      <tbody>`;
+    logs.forEach(l => {
+      const cat = CATS.find(c => c.id == l.cid);
+      const catName = cat ? cat.ko : 'ID ' + l.cid;
+      const clsBadge = l.pct >= 90 ? 'badge-good' : l.pct >= 60 ? 'badge-ok' : 'badge-low';
+      const ts = l.timestamp ? fmtDate(l.timestamp.toMillis()) : '-';
+      html += `<tr>
+        <td>${catName}</td>
+        <td>Set ${(l.setIndex||0)+1}</td>
+        <td><span class="badge ${clsBadge}">${l.score} (${l.pct}%)</span></td>
+        <td>${ts}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  html += `</div>`;
+
+  return html;
+}
+
+function switchTab(e, tabId, uid) {
+  const detail = document.getElementById('detail_' + uid);
+  detail.querySelectorAll('.dtab-content').forEach(t => t.style.display = 'none');
+  detail.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).style.display = '';
+  e.target.classList.add('active');
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmtDate(ms) {
+  if (!ms) return '-';
+  const d = new Date(ms);
+  const now = Date.now();
+  const diff = now - ms;
+  if (diff < 60000) return '방금 전';
+  if (diff < 3600000) return Math.floor(diff/60000) + '분 전';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '시간 전';
+  if (diff < 604800000) return Math.floor(diff/86400000) + '일 전';
+  return d.toLocaleDateString('ko-KR');
+}
+function fmtSecs(s) {
+  if (s < 60) return s + '초';
+  if (s < 3600) return Math.floor(s/60) + '분 ' + (s%60) + '초';
+  return Math.floor(s/3600) + '시간 ' + Math.floor((s%3600)/60) + '분';
+}
+function colorFromEmail(email) {
+  if (!email) return '#4472C4';
+  let h = 0;
+  for (let c of email) h = (h*31 + c.charCodeAt(0)) & 0xffffffff;
+  const colors = ['#4472C4','#E74C3C','#27AE60','#9B59B6','#E67E22','#1ABC9C','#E91E63','#3F51B5','#FF5722','#607D8B'];
+  return colors[Math.abs(h) % colors.length];
+}
+</script>
+</body>
+</html>

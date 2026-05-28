@@ -58,6 +58,15 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   display:flex;align-items:center;padding:0 18px;z-index:300;gap:10px;
   box-shadow:0 2px 12px rgba(100,40,0,.28)}
 #hbg{font-size:1.3rem;cursor:pointer;display:none;background:none;border:none;color:#fff;padding:4px}
+#search-icon-btn{display:none;background:none;border:none;color:#fff;cursor:pointer;
+  font-size:1.15rem;padding:6px;border-radius:8px;transition:.15s}
+#search-icon-btn:hover{background:rgba(255,255,255,.15)}
+.wel-mobile-open{display:none;width:100%;margin:14px 0 4px;
+  background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;
+  border:none;border-radius:50px;padding:14px 20px;font-size:.95rem;
+  font-weight:700;font-family:inherit;cursor:pointer;align-items:center;
+  justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(99,102,241,.4);
+  transition:transform .12s}
 .htxt .sub{font-size:.65rem;opacity:.6}
 .htxt h1{font-size:.95rem;font-weight:800}
 #srch{margin-left:auto;padding:7px 16px;border-radius:20px;border:none;
@@ -178,10 +187,11 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 .ctts{padding:5px 14px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;
   font-size:.79rem;font-weight:600;background:var(--al);color:var(--ad);transition:.15s}
 .ctts:hover{background:var(--am)}
-.card-nav{display:flex;align-items:center;justify-content:center;gap:14px}
-.cnav{padding:8px 22px;border-radius:20px;border:1.5px solid var(--brd);cursor:pointer;
+.card-nav{display:flex;align-items:center;justify-content:center;gap:10px}
+.cnav{padding:10px 22px;border-radius:20px;border:1.5px solid var(--brd);cursor:pointer;
   font-weight:700;font-size:.88rem;font-family:inherit;background:var(--surf);
-  color:var(--tx);box-shadow:0 2px 6px var(--shad);transition:.15s}
+  color:var(--tx);box-shadow:0 2px 6px var(--shad);transition:.15s;
+  min-height:44px;touch-action:manipulation}
 .cnav:hover{background:var(--al);border-color:var(--a)}
 .cflipbtn{padding:8px 20px;border-radius:20px;border:none;cursor:pointer;
   font-weight:700;font-size:.84rem;font-family:inherit;color:#fff;transition:.15s}
@@ -322,15 +332,68 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 .stag{display:inline-block;padding:2px 9px;border-radius:10px;
   font-size:.7rem;color:#fff;font-weight:700;white-space:nowrap}
 
+/* ── Sidebar overlay (mobile) ── */
+#sb-overlay{display:none;position:fixed;inset:0;top:var(--hh);
+  background:rgba(30,10,60,.45);z-index:199;backdrop-filter:blur(1px)}
+#sb-overlay.open{display:block}
+
 /* ── Mobile ── */
 @media(max-width:700px){
+  /* Header */
   #hbg{display:block}
-  #sb{transform:translateX(-100%);transition:transform .25s}
-  #sb.open{transform:translateX(0)}
-  #main{margin-left:0;padding:14px}
-  #srch{width:110px}
+  #srch{display:none}
+  #srch.sb-search-open{display:block;position:fixed;top:var(--hh);left:0;right:0;
+    width:100%;padding:10px 16px;border-radius:0;background:#3730a3;
+    border:none;border-bottom:2px solid rgba(255,255,255,.2);z-index:301;
+    font-size:.92rem;color:#fff}
+  #search-icon-btn{display:flex}
+
+  /* Sidebar */
+  #sb{transform:translateX(-100%);transition:transform .26s cubic-bezier(.4,0,.2,1)}
+  #sb.open{transform:translateX(0);box-shadow:6px 0 32px rgba(30,10,60,.35)}
+
+  /* Main content */
+  #main{margin-left:0;padding:12px}
+
+  /* Landing page quick-access */
+  .wel-mobile-open{display:flex}
+
+  /* Eval bar labels: fewer labels on mobile */
+  .wel-eval-scale span:nth-child(2),.wel-eval-scale span:nth-child(4){display:none}
+  .wel-eval-scale{font-size:.62rem}
+
+  /* Card mode: bigger touch targets */
+  .card-filter-row{gap:5px}
+  .cft{padding:8px 10px !important;font-size:.77rem !important;flex:1;text-align:center}
+  .card-nav{gap:8px}
+  .cnav{padding:13px 18px !important;font-size:.9rem !important}
+  .cconfirm{flex:1;padding:13px 10px !important;font-size:.82rem !important}
+
+  /* Quiz */
   .qopts{grid-template-columns:1fr}
+  .qword{font-size:1.65rem !important}
+  .opt{padding:15px 14px !important}
+
+  /* Modebar: wrap buttons */
+  .modebar{flex-wrap:nowrap;gap:4px;padding:4px 6px}
+  .mbtn{padding:9px 8px !important;font-size:.78rem !important}
+
+  /* Stats grid */
   .lv-stat-row{grid-template-columns:1fr}
+
+  /* My Page: full screen modal */
+  #mp-overlay{padding:0 !important;align-items:flex-start}
+  #mp-box{border-radius:0 !important;max-width:100% !important;
+    min-height:100dvh !important;min-height:100vh !important}
+  .mp-tabs{position:sticky;top:0;z-index:10;background:var(--surf2)}
+  .mptab{padding:12px 13px;font-size:.76rem}
+
+  /* Badge notification: keep above mobile browser bar */
+  .badge-notif{bottom:90px;right:14px;max-width:240px}
+
+  /* XP bar */
+  #xp-bar-row{padding:4px 12px}
+  #xp-label{display:none}
 }
 
 /* ─── CONFETTI ─── */
@@ -770,8 +833,9 @@ body {
 .mb-2{background:#d1fae5;color:#059669}
 
 .card-filter-row{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
-.cft{padding:5px 13px;border-radius:20px;font-size:.75rem;font-weight:700;
-  cursor:pointer;border:2px solid transparent;transition:.15s;opacity:.55}
+.cft{padding:6px 13px;border-radius:20px;font-size:.75rem;font-weight:700;
+  cursor:pointer;border:2px solid transparent;transition:.15s;opacity:.55;
+  min-height:36px;touch-action:manipulation}
 .cft.on{opacity:1}
 .cft-0{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
 .cft-0.on{background:#dc2626;color:#fff;border-color:#dc2626}
@@ -902,6 +966,7 @@ body {
 
 <div id="hdr">
   <button id="hbg" onclick="toggleSB()">☰</button>
+  <button id="search-icon-btn" onclick="toggleMobileSearch()" title="검색">🔍</button>
   <div class="htxt" onclick="showWelcome()" style="cursor:pointer" title="홈으로">
     <div class="sub">TTMIK L1+L2 · 334단어 · 16 Categories</div>
     <h1>📚 TTMIK 단어장 <span style="font-weight:400;opacity:.7;font-size:.82rem">· L1 + L2</span></h1>
@@ -924,6 +989,7 @@ body {
 <div id="sb"><div id="clist"></div></div>
 
 
+<div id="sb-overlay" onclick="closeSB()"></div>
 <div id="main">
   <div id="wel">
   <div class="wel-hero">
@@ -937,6 +1003,7 @@ body {
     </div>
   </div>
 
+  <button class="wel-mobile-open" onclick="toggleSB()">📂 카테고리 선택하기 · Open Categories</button>
   <div class="wel-guide-title">📖 학습 가이드 · How to Study</div>
   <div class="wel-flow">
     <div class="wel-flow-row">
@@ -1438,6 +1505,7 @@ function updateSidebarBar(catId) {
 }
 
 function showWelcome() {
+  if(window.innerWidth<=700) closeSB();
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   if (CC) { stopTimer(CC.id); CC = null; }
   document.getElementById('wel').style.display = '';
@@ -1482,6 +1550,7 @@ function renderSidebar() {
 
 // ── Category View ─────────────────────────────────────────────────────────────
 function showCat(id) {
+  if(window.innerWidth<=700) closeSB();
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   const ci = document.getElementById('ci'+id);
   if (ci) ci.classList.add('active');
@@ -1506,6 +1575,7 @@ function showCat(id) {
 
 // ── Trivia Category (sidebar item 12) ─────────────────────────────────────────
 function showTriviaCat() {
+  if(window.innerWidth<=700) closeSB();
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   const ci = document.getElementById('ci-trivia');
   if (ci) ci.classList.add('active');
@@ -2033,7 +2103,26 @@ function fmtSecs(s){
   if(s<3600)return Math.floor(s/60)+'분 '+Math.round(s%60)+'초';
   return Math.floor(s/3600)+'시간 '+Math.floor((s%3600)/60)+'분';
 }
-function toggleSB(){ document.getElementById('sb').classList.toggle('open'); }
+function toggleSB(){
+  const sb=document.getElementById('sb');
+  const ov=document.getElementById('sb-overlay');
+  const isOpen=sb.classList.toggle('open');
+  if(ov) ov.classList.toggle('open', isOpen);
+}
+function closeSB(){
+  document.getElementById('sb').classList.remove('open');
+  const ov=document.getElementById('sb-overlay');
+  if(ov) ov.classList.remove('open');
+}
+function toggleMobileSearch(){
+  const s=document.getElementById('srch');
+  s.classList.toggle('sb-search-open');
+  if(s.classList.contains('sb-search-open')){
+    s.style.display='block'; s.focus();
+  } else {
+    s.style.display=''; s.value=''; doSearch('');
+  }
+}
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 renderSidebar();

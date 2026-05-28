@@ -51,6 +51,38 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 #auth-err{color:#dc2626;font-size:.78rem;min-height:18px;margin-bottom:6px;text-align:center}
 .aforgot{text-align:center;font-size:.76rem;color:var(--a);cursor:pointer;
   margin-top:10px;text-decoration:underline}
+.askip{display:block;text-align:center;font-size:.76rem;color:var(--tx3);
+  cursor:pointer;margin-top:12px;padding:6px;border-radius:8px;
+  border:1px solid var(--brd);background:transparent;
+  font-family:inherit;width:100%;transition:.15s}
+.askip:hover{background:var(--surf2)}
+
+/* Sign-up nudge */
+#nudge-overlay{display:none;position:fixed;inset:0;background:rgba(30,10,60,.5);
+  z-index:8000;align-items:center;justify-content:center;padding:20px}
+#nudge-overlay.open{display:flex}
+.nudge-box{background:#fff;border-radius:24px;max-width:340px;width:100%;
+  padding:32px 26px 24px;text-align:center;position:relative;
+  box-shadow:0 16px 56px rgba(99,102,241,.3);
+  border:2px solid var(--brd2)}
+.nudge-close{position:absolute;top:14px;right:16px;background:none;border:none;
+  font-size:1.1rem;cursor:pointer;color:var(--tx3);padding:4px}
+.nudge-icon{font-size:2.8rem;margin-bottom:8px}
+.nudge-title{font-size:1.12rem;font-weight:900;color:var(--tx);margin-bottom:6px}
+.nudge-sub{font-size:.8rem;color:var(--tx3);line-height:1.55;margin-bottom:20px}
+.nudge-cta{display:flex;flex-direction:column;gap:10px}
+.nudge-signup{padding:13px;border-radius:50px;border:none;cursor:pointer;
+  font-size:.92rem;font-weight:700;font-family:inherit;
+  background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;
+  box-shadow:0 4px 14px rgba(99,102,241,.38);transition:.15s}
+.nudge-signup:hover{transform:translateY(-2px)}
+.nudge-login{padding:10px;border-radius:50px;
+  border:1.5px solid var(--brd);cursor:pointer;
+  font-size:.85rem;font-weight:700;font-family:inherit;
+  background:transparent;color:var(--tx2);transition:.15s}
+.nudge-login:hover{background:var(--al)}
+.nudge-skip{background:none;border:none;font-size:.75rem;color:var(--tx3);
+  cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline}
 
 /* ── Header ── */
 #hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);
@@ -960,6 +992,7 @@ body {
       onkeydown="if(event.key==='Enter')submitAuth()">
     <button class="abtn" onclick="submitAuth()" id="auth-submit-btn">로그인 · Login</button>
     <div class="aforgot" onclick="sendReset()">비밀번호 찾기 · Forgot password?</div>
+    <button class="askip" onclick="skipAuth()">👀 먼저 둘러볼게요 · Explore first</button>
   </div>
 </div>
 
@@ -977,6 +1010,7 @@ body {
     <button class="hchip" id="mypage-btn" onclick="openMyPage()" style="display:none">👤 My Page</button>
     <button class="hchip gold" id="admin-btn" onclick="openAdmin()" style="display:none">📊 대시보드 · Dashboard</button>
     <button class="hchip" id="logout-btn" onclick="doLogout()" style="display:none">로그아웃 · Logout</button>
+    <button class="hchip" id="signin-btn" onclick="openAuthModal('login')" style="display:none">🔑 Sign In</button>
   </div>
 </div>
 
@@ -1151,6 +1185,21 @@ body {
 </div>
 
 
+<!-- Sign-up nudge modal -->
+<div id="nudge-overlay" onclick="if(event.target===this)closeNudge()">
+  <div class="nudge-box">
+    <button class="nudge-close" onclick="closeNudge()">✕</button>
+    <div class="nudge-icon">🏅</div>
+    <div class="nudge-title">Wanna track your records?</div>
+    <div class="nudge-sub">진도, XP, 뱃지를 저장하고 싶으신가요?<br>Sign up to save your progress, earn XP &amp; badges!</div>
+    <div class="nudge-cta">
+      <button class="nudge-signup" onclick="closeNudge();openAuthModal('register')">🚀 Sign Up · 회원가입</button>
+      <button class="nudge-login"  onclick="closeNudge();openAuthModal('login')">Log In · 로그인</button>
+      <button class="nudge-skip"   onclick="closeNudge()">나중에 할게요 · Maybe later</button>
+    </div>
+  </div>
+</div>
+
 <div id="mp-overlay" onclick="if(event.target===this)closeMyPage()">
   <div id="mp-box">
     <div id="mp-hdr">
@@ -1241,6 +1290,7 @@ auth.onAuthStateChanged(async user => {
     document.getElementById('uname').textContent = user.displayName || user.email.split('@')[0];
     document.getElementById('mypage-btn').style.display = '';
     document.getElementById('logout-btn').style.display = '';
+    document.getElementById('signin-btn').style.display = 'none';
     if (user.email === ADMIN_EMAIL) document.getElementById('admin-btn').style.display = '';
     await loadProgress();
     await loadGameData();
@@ -1249,11 +1299,29 @@ auth.onAuthStateChanged(async user => {
     updateEvalBar();
   } else {
     currentUser = null; PROG = {};
-    document.getElementById('auth-overlay').style.display = 'flex';
     document.getElementById('uname').textContent = '';
     ['mypage-btn','logout-btn','admin-btn'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('signin-btn').style.display = '';
+    // Guest mode: show app without login
+    renderSidebar();
+    updateEvalBar();
   }
 });
+
+function skipAuth() {
+  document.getElementById('auth-overlay').style.display = 'none';
+}
+function openAuthModal(tab) {
+  document.getElementById('auth-overlay').style.display = 'flex';
+  switchAuthTab(tab || 'login');
+  setTimeout(()=>document.getElementById('ain-email').focus(), 100);
+}
+function showNudge() {
+  document.getElementById('nudge-overlay').classList.add('open');
+}
+function closeNudge() {
+  document.getElementById('nudge-overlay').classList.remove('open');
+}
 
 let IS_REGISTER = false;
 function switchAuthTab(tab) {
@@ -1784,16 +1852,21 @@ function setQDir(d){ QDir=d; applyQuizFilter(); renderQuizUI(); }
 function renderQuizQ(){
   if(QI>=QW.length){
     const pct=QW.length?Math.round(QS/QW.length*100):0;
-    // Save progress
-    if(QSF>=0){
-      const sc=QS+'/'+QW.length;
-      saveProgress(CC.id,QSF,sc);
-      logQuizAttempt(CC.id,QSF,sc,pct);
+    // Save progress (logged-in users only)
+    if(currentUser) {
+      if(QSF>=0){
+        const sc=QS+'/'+QW.length;
+        saveProgress(CC.id,QSF,sc);
+        logQuizAttempt(CC.id,QSF,sc,pct);
+      } else {
+        const sc=QS+'/'+QW.length;
+        const totalSets=Math.ceil(CC.words.length/10);
+        for(let i=0;i<totalSets;i++) saveProgress(CC.id,i,sc);
+        logQuizAttempt(CC.id,-1,sc,pct);
+      }
     } else {
-      const sc=QS+'/'+QW.length;
-      const totalSets=Math.ceil(CC.words.length/10);
-      for(let i=0;i<totalSets;i++) saveProgress(CC.id,i,sc);
-      logQuizAttempt(CC.id,-1,sc,pct);
+      // Guest: show nudge after short delay
+      setTimeout(showNudge, 1400);
     }
     // ── XP award ──
     const _xpEarned = Math.round(pct/10)*2 + (pct===100?10:0);
@@ -1921,6 +1994,7 @@ function doSearch(q){
 
 // ── MY PAGE ───────────────────────────────────────────────────────────────────
 async function openMyPage(){
+  if (!currentUser) { showNudge(); return; }
   const overlay=document.getElementById('mp-overlay');
   overlay.classList.add('open');
   // Always reset to Overview tab
@@ -2210,7 +2284,7 @@ function updateXPBar() {
 
 // ── XP award ──────────────────────────────────────────
 async function addXP(amount) {
-  if (!currentUser || !amount) return;
+  if (!currentUser || !amount) return; // guests: XP not saved
   const oldLv = getLevel(GAME_DATA.xp||0).lv;
   GAME_DATA.xp = (GAME_DATA.xp||0) + amount;
   const newLv = getLevel(GAME_DATA.xp);

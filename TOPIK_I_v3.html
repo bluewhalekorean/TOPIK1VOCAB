@@ -259,6 +259,7 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 .card.m1{border-color:#fbbf24;box-shadow:0 6px 24px rgba(251,191,36,.15)}
 .card.m2{border-color:#10b981;box-shadow:0 6px 24px rgba(16,185,129,.15)}
 .card:hover{box-shadow:0 10px 32px var(--shad2);transform:translateY(-2px)}
+.card:focus-visible{outline:3px solid var(--a);outline-offset:4px}
 .card-front,.card-back{width:100%}
 .card-face-anim{animation:cfadein .16s ease}
 @keyframes cfadein{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
@@ -488,6 +489,15 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   #xp-bar-row{padding:4px 12px}
   #xp-label{display:none}
 }
+
+/* ─── SET COMPLETE PULSE ─── */
+@keyframes set-complete-pop{
+  0%{transform:scale(1)}
+  30%{transform:scale(1.06)}
+  60%{transform:scale(.97)}
+  100%{transform:scale(1)}
+}
+.set-complete{animation:set-complete-pop .5s ease}
 
 /* ─── LOADING SPINNER ─── */
 .spin{display:inline-block;width:20px;height:20px;border:2px solid var(--brd2);
@@ -1128,12 +1138,13 @@ body {
     box-shadow:0 2px 8px var(--shad)"></div>
   <div class="wel-hero">
     <h2>🐋 TTMIK 단어장</h2>
-    <div class="sub">Talk To Me In Korean · Level 1 &amp; 2</div>
+    <div class="sub">Talk To Me In Korean · Level 1 &amp; 2 · 339단어 · 16 카테고리</div>
     <div class="wel-stats">
-      <div class="wel-stat"><div class="n">339</div><div class="l">단어 · Words</div></div>
+      <div class="wel-stat"><div class="n" id="ws-words">339</div><div class="l">단어 · Words</div></div>
       <div class="wel-stat"><div class="n">16</div><div class="l">카테고리 · Cats</div></div>
       <div class="wel-stat"><div class="n">3</div><div class="l">학습 모드</div></div>
       <div class="wel-stat"><div class="n">★</div><div class="l">K-Culture Trivia</div></div>
+      <div class="wel-stat" id="ws-mastered"><div class="n" id="ws-m2">0</div><div class="l">단어 암기완료</div></div>
     </div>
   </div>
 
@@ -1762,6 +1773,8 @@ function updateEvalBar() {
   if(!fill)return;
   fill.style.width=pct+'%';
   marker.style.left=pct+'%';
+  const _m2el=document.getElementById('ws-m2');
+  if(_m2el) _m2el.textContent=done;
   let lvTxt='';
   if(pct<10) lvTxt='입문 단계 · A1 Beginner — 첫 카테고리부터 시작해 보세요!';
   else if(pct<30) lvTxt='초급 A1 · Elementary — 잘하고 있어요! Keep going!';
@@ -1919,6 +1932,13 @@ function gramLabel(k) { return ''; }
 // ── LIST VIEW ─────────────────────────────────────────────────────────────────
 function renderList() {
   const c = CC; let html = '';
+  // Show category study time if available
+  const catTime = (typeof PROG !== 'undefined' && window._timeSpentCache)
+    ? (window._timeSpentCache[c.id] || 0) : 0;
+  if (catTime > 60) {
+    html += `<div style="font-size:.76rem;color:var(--tx3);margin-bottom:12px;text-align:right">
+      ⏱ 이 카테고리 학습 시간: <strong>${fmtSecs(catTime)}</strong></div>`;
+  }
   for (let s=0; s<c.words.length; s+=10) {
     const sw = c.words.slice(s,s+10);
     const filtered = sw;
@@ -1989,7 +2009,7 @@ function renderCardUI() {
       <button class="cft cft-2" id="cft-2" onclick="toggleCFilter(2)">✅ 확실히 알겠어요</button>
     </div>
     <div class="card-wrap">
-      <div class="card" id="crd" onclick="cardFlip()">
+      <div class="card" id="crd" onclick="cardFlip()" tabindex="0" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();cardFlip()}">
         <div class="card-front" id="cf"></div>
         <div class="card-back" id="cb" style="display:none"></div>
       </div>
@@ -2005,6 +2025,9 @@ function setCDir(d){ CDir=d; renderCardUI(); }
 function renderCard(){
   if(!CW.length){document.getElementById('kv').innerHTML='<p style="color:var(--tx3);padding:20px">단어가 없습니다.</p>';return;}
   const w=CW[CI];
+  // Apply mastery-level border color to card
+  const _crd=document.getElementById('crd');
+  if(_crd&&CC){_crd.classList.remove('m0','m1','m2');_crd.classList.add('m'+getMastery(CC.id,w.no));}
   const front=document.getElementById('cf'), back=document.getElementById('cb');
   front.style.display=''; back.style.display='none';
   // Fade animation on card change
@@ -2100,6 +2123,21 @@ function studyWrongWords() {
   document.getElementById('qbody').innerHTML='';
   renderQuizQ();
 }
+function studyWrongCards() {
+  if (!QWrong.length) return;
+  // Switch to card mode with wrong words
+  const _wrongNos = new Set(QWrong.map(w=>w.no));
+  setMode('card');
+  CW = QWrong.slice(); CI=0; CDir='koen';
+  // Temporarily mark wrong words as level 0 for card pool
+  // (they may already be 0 or 1, just show them)
+  QWrong = [];
+  renderCardUI();
+  // Override CW to show only wrong words
+  CW = _wrongNos.size > 0 ? CC.words.filter(w=>_wrongNos.has(w.no)) : CC.words;
+  CI=0;
+  renderCard();
+}
 
 function toggleHideEn(btn) {
   const lv = document.getElementById('lv');
@@ -2151,8 +2189,14 @@ function renderQuizQ(){
           <button onclick="speak('${w.k.replace(/'/g,"\\'")}\'','ko');event.stopPropagation()"
             style="background:none;border:none;cursor:pointer;font-size:.88rem;padding:0 4px">🔊</button>
         </div>`).join('')}
-        <button class="wrong-practice" onclick="studyWrongWords()">↺ 이 단어만 다시 연습 · Practice wrong words</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="wrong-practice" onclick="studyWrongWords()">❓ 퀴즈 다시 · Re-quiz</button>
+          <button class="wrong-practice" style="background:#fef3c7;color:#92400e" onclick="studyWrongCards()">🃏 카드로 복습 · Review cards</button>
+        </div>
       </div>` : '';
+    // Trigger celebration animation on completion
+    document.getElementById('qbody').classList.add('set-complete');
+    setTimeout(()=>document.getElementById('qbody').classList.remove('set-complete'),600);
     document.getElementById('qbody').innerHTML=`
       <div class="qcard">
         <div class="qword">${pct===100?'🎉':'📊'} ${pct===100?'완벽!':'완료!'} · ${pct===100?'Perfect!':'Done!'}</div>

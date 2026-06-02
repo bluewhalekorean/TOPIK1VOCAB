@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BW Korean">
+<link rel="manifest" href="manifest.json">
 <title>Blue Whale Korean · TTMIK 한국어 단어장</title>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -23,6 +29,34 @@
   --shad:rgba(99,102,241,.10);--shad2:rgba(99,102,241,.22)}
 body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   background:var(--bg);color:var(--tx);min-height:100vh}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0f0f1a;--surf:#1a1a2e;--surf2:#16213e;--surf3:#1a1a2e;
+    --brd:#2d2d4e;--brd2:#252540;
+    --tx:#e8eaf6;--tx2:#9fa8da;--tx3:#5c6bc0;
+    --a:#818cf8;--ad:#a5b4fc;--al:#1a1a3e;--am:#2a2a5e;
+    --shad:rgba(0,0,0,.4);--shad2:rgba(0,0,0,.6)
+  }
+  #hdr{background:linear-gradient(135deg,#0d1b3e,#1a2a6c)}
+  #sb{background:linear-gradient(180deg,#12122a,#0f0f1a)!important;
+    border-right-color:var(--brd)!important}
+  .ci:hover{background:#1e1e38!important}
+  .ci.active{background:#252550!important}
+  .card{background:var(--surf)!important;border-color:var(--brd)!important}
+  .qcard{background:linear-gradient(145deg,var(--surf),var(--surf2))!important}
+  .opt{background:var(--surf)!important;border-color:var(--brd)!important;color:var(--tx)!important}
+  .blk{background:var(--surf)!important}
+  .wt th{background:#12122a!important;color:#9fa8da!important}
+  .wt tr:hover td{background:#1e1e38!important}
+  .auth-overlay,.auth-box{background:var(--surf)}
+  #mp-box{background:#0f0f1a!important}
+  .nudge-box,.confirm-box,.lu-box{background:var(--surf)!important}
+  .wel-step,.ov-cats,.ov-kpi,.time-item{background:var(--surf)!important;border-color:var(--brd)!important}
+  .wel-eval{background:var(--surf)!important;border-color:var(--brd)!important}
+  .wel-start-cta{background:linear-gradient(135deg,#1a1a3e,var(--surf2))!important;
+    border-color:var(--brd)!important}
+}
 
 /* ── Auth Modal ── */
 #auth-overlay{position:fixed;inset:0;background:rgba(50,20,5,.6);z-index:9999;
@@ -1078,6 +1112,10 @@ body {
 <div id="sb-overlay" onclick="closeSB()"></div>
 <div id="main">
   <div id="wel">
+  <div id="resume-banner" style="display:none;align-items:center;justify-content:space-between;
+    gap:10px;background:var(--surf);border:1.5px solid var(--brd2);border-radius:14px;
+    padding:10px 16px;margin-bottom:14px;font-size:.82rem;color:var(--tx2);font-weight:600;
+    box-shadow:0 2px 8px var(--shad)"></div>
   <div class="wel-hero">
     <h2>🐋 TTMIK 단어장</h2>
     <div class="sub">Talk To Me In Korean · Level 1 &amp; 2</div>
@@ -1327,6 +1365,11 @@ firebase.initializeApp(FB_CONFIG);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+// Show eval bar immediately from localStorage (before auth resolves)
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => { if(typeof updateEvalBar==='function') updateEvalBar(); }, 300);
+});
+
 // ── App State ─────────────────────────────────────────────────────────────────
 let currentUser = null;
 let PROG = {};          // { "cid_si": { score, pct, attempts, lastAt } }
@@ -1342,6 +1385,24 @@ let QW=[], QI=0, QS=0, QA=null, QSF=-1, QDir='koen', QWrong=[];
 let FCW=[], FCI=0, FCFlipped=false;
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
+
+// ── Touch / Swipe support for cards ──────────────────────────────────────
+let _swipeStartX = null, _swipeStartY = null;
+document.addEventListener('touchstart', e => {
+  if (CM !== 'card' || !CC) return;
+  const t = e.touches[0];
+  _swipeStartX = t.clientX; _swipeStartY = t.clientY;
+}, {passive:true});
+document.addEventListener('touchend', e => {
+  if (CM !== 'card' || !CC || _swipeStartX === null) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - _swipeStartX;
+  const dy = t.clientY - _swipeStartY;
+  _swipeStartX = null; _swipeStartY = null;
+  if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return; // not a horizontal swipe
+  if (dx < -40) cardNav(1);   // swipe left → next
+  if (dx >  40) cardNav(-1);  // swipe right → prev
+}, {passive:true});
 
 // ── Keyboard shortcuts ────────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
@@ -1705,6 +1766,25 @@ function updateSidebarBar(catId) {
 
 function showWelcome() {
   if(window.innerWidth<=700) closeSB();
+  // Show 'resume' prompt if user has a last category
+  try {
+    const lastId = parseInt(localStorage.getItem('bwk_last_cat'));
+    const resumeEl = document.getElementById('resume-banner');
+    if (lastId && resumeEl) {
+      const cat = DATA.find(c=>c.id===lastId);
+      if (cat) {
+        resumeEl.style.display = 'flex';
+        resumeEl.innerHTML = `<span>▶ 이어서 학습하기 · Continue: <b>${cat.ko}</b></span>
+          <button onclick="showCat(${lastId})" style="background:var(--a);color:#fff;border:none;
+          border-radius:20px;padding:5px 16px;cursor:pointer;font-family:inherit;font-weight:700;
+          font-size:.78rem">계속 →</button>
+          <button onclick="document.getElementById('resume-banner').style.display='none';
+          try{localStorage.removeItem('bwk_last_cat')}catch(e){}" 
+          style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:.8rem">✕</button>`;
+      }
+    }
+  } catch(e){}
+
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   if (CC) { stopTimer(CC.id); CC = null; }
   document.getElementById('wel').style.display = '';
@@ -1735,7 +1815,7 @@ function renderSidebar() {
         <div class="cen">${c.en}</div>
         ${prog}
       </div>
-      <div class="cnt">${badge||c.words.length+'단어'}</div>
+      <div class="cnt" title="${Math.round(m2/total*100)}% 완료">${badge||c.words.length+'단어'}</div>
     </div>`;
   };
   const basics = DATA.filter(c=>c.id<=10).map(renderCatItem).join('');
@@ -1755,6 +1835,7 @@ function renderSidebar() {
 // ── Category View ─────────────────────────────────────────────────────────────
 function showCat(id) {
   if(window.innerWidth<=700) closeSB();
+  try{localStorage.setItem('bwk_last_cat', id);}catch(e){}
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   const ci = document.getElementById('ci'+id);
   if (ci) ci.classList.add('active');
@@ -2069,7 +2150,8 @@ function renderQuizQ(){
   const wrong=pool.slice(0,3);
   const opts=shuffle([w,...wrong]);
   const question=QDir==='koen'?w.k:w.e;
-  document.getElementById('qsc').textContent=`${QS} / ${QI}`;
+  const _qs_pct=QI>0?Math.round(QS/QI*100):0;
+  document.getElementById('qsc').innerHTML=`<span style="color:${_qs_pct>=80?'#16a34a':_qs_pct>=60?'#d97706':'#dc2626'}">${QS}</span> / ${QI}`;
   document.getElementById('qpg').style.width=QW.length?Math.round(QI/QW.length*100)+'%':'0%';
   document.getElementById('qpgn').textContent=QI+' / '+QW.length;
   document.getElementById('qbody').innerHTML=`
@@ -2079,7 +2161,8 @@ function renderQuizQ(){
       <button class="ctts" style="margin-top:8px" onclick="speak('${question}','${QDir==='koen'?'ko':'en'}')">🔊 듣기</button>
     </div>
     <div class="qopts">
-      ${opts.map((o,i)=>`<button class="opt" onclick="answerQ(${i},${o===w})" id="opt${i}">${getAns(o)}</button>`).join('')}
+      ${opts.map((o,i)=>`<button class="opt" onclick="answerQ(${i},${o===w})" id="opt${i}">`
+        +`<span class="kbd-hint" style="margin-right:6px;vertical-align:middle">${i+1}</span>${getAns(o)}</button>`).join('')}
     </div>
     <button class="qnext" id="qnxt" onclick="nextQ()">다음 · Next ▶</button>`;
   setTimeout(()=>speak(question, QDir==='koen'?'ko':'en'), 150);

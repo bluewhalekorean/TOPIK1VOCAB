@@ -1,0 +1,21 @@
+{
+  "name": "Blue Whale Korean · TTMIK 한국어",
+  "short_name": "BW Korean",
+  "description": "TTMIK L1+L2 Korean vocabulary flashcards, quizzes & trivia",
+  "start_url": "/TOPIK1VOCAB/v3.html",
+  "display": "standalone",
+  "background_color": "#eef2ff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='80' x='10'>🐋</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "language"],
+  "screenshots": []
+}

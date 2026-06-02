@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TTMIK 단어장 v3</title>
+<title>Blue Whale Korean · TTMIK 한국어 단어장</title>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -119,6 +119,11 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   background:var(--surf2);border-right:1px solid var(--brd);z-index:200}
 #sb::-webkit-scrollbar{width:4px}
 #sb::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+.sb-sec{padding:8px 16px 4px;font-size:.6rem;font-weight:800;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.08em;margin-top:2px;
+  border-top:1px solid var(--brd2);display:flex;align-items:center;gap:6px}
+.sb-sec:first-child{border-top:none}
+
 .ci{padding:9px 14px 9px 16px;cursor:pointer;border-left:4px solid transparent;
   display:flex;align-items:flex-start;gap:8px;transition:.12s}
 .ci:hover{background:#fef1e3}
@@ -173,6 +178,13 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 .wt{width:100%;border-collapse:collapse}
 .wt th{padding:8px 12px;font-size:.76rem;font-weight:700;color:var(--tx2);
   background:#fdf8f3;border-bottom:2px solid var(--brd2);text-align:left}
+.hide-en .ec{color:transparent!important;background:var(--brd2);
+  border-radius:4px;cursor:pointer;user-select:none;transition:.15s}
+.hide-en .ec:hover{color:var(--tx)!important;background:transparent}
+.en-toggle{padding:5px 14px;border-radius:20px;border:1.5px solid var(--brd);
+  background:var(--surf);font-size:.76rem;cursor:pointer;font-family:inherit;
+  color:var(--tx2);transition:.15s;font-weight:600}
+.en-toggle.on{background:var(--al);border-color:var(--a);color:var(--ad)}
 .wt th:first-child,.wt td:first-child{text-align:center;width:40px}
 .wt td{padding:9px 12px;border-bottom:1px solid var(--brd2);font-size:.88rem;vertical-align:top}
 .wt tr:last-child td{border-bottom:none}
@@ -369,6 +381,16 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   background:rgba(30,10,60,.45);z-index:199;backdrop-filter:blur(1px)}
 #sb-overlay.open{display:block}
 
+/* ── Keyboard hint ── */
+@media(min-width:701px){
+  .kbd-hint{display:inline-block;background:var(--surf2);
+    border:1px solid var(--brd);border-radius:5px;padding:1px 5px;
+    font-size:.62rem;color:var(--tx3);vertical-align:middle;margin-left:4px}
+  .card-kbd-tip{text-align:center;font-size:.65rem;color:var(--tx3);
+    margin-top:8px;opacity:.7}
+}
+@media(max-width:700px){.kbd-hint,.card-kbd-tip{display:none}}
+
 /* ── Mobile ── */
 @media(max-width:700px){
   /* Header */
@@ -469,6 +491,20 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 
 /* ─── BADGE GRID ─── */
 .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:12px}
+
+/* ─── QUIZ WRONG REVIEW ─── */
+.wrong-review{background:#fff5f5;border-radius:12px;padding:12px 16px;
+  border-left:3px solid #f43f5e;margin-top:14px;text-align:left}
+.wrong-review-title{font-size:.78rem;font-weight:700;color:#9f1239;margin-bottom:8px}
+.wrong-row{display:flex;align-items:center;
+  padding:5px 0;border-bottom:1px solid #fecdd3;font-size:.82rem;gap:6px}
+.wrong-row:last-of-type{border-bottom:none}
+.wrong-ko{font-weight:700;color:#be185d;min-width:90px}
+.wrong-en{color:#6b7280;font-size:.76rem;flex:1}
+.wrong-practice{margin-top:10px;padding:7px 16px;border-radius:20px;
+  background:#fee2e2;color:#be185d;border:none;cursor:pointer;
+  font-size:.78rem;font-weight:700;font-family:inherit;transition:.15s}
+.wrong-practice:hover{background:#fecaca}
 .bdg-card{border-radius:14px;padding:16px 10px;text-align:center;
   border:2px solid var(--brd);transition:.2s;background:var(--surf2)}
 .bdg-card.earned{border-color:var(--a);background:var(--surf);
@@ -860,6 +896,10 @@ body {
 .mastery-badge{display:inline-flex;align-items:center;gap:4px;
   padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
   margin-top:10px;letter-spacing:.01em}
+.mastery-undo{background:none;border:1px solid var(--brd);border-radius:20px;
+  padding:2px 10px;font-size:.7rem;cursor:pointer;color:var(--tx3);
+  margin-top:4px;transition:.15s;font-family:inherit}
+.mastery-undo:hover{background:var(--surf2);color:var(--tx)}
 .mb-0{background:#fee2e2;color:#dc2626}
 .mb-1{background:#fef3c7;color:#b45309}
 .mb-2{background:#d1fae5;color:#059669}
@@ -896,6 +936,18 @@ body {
   box-shadow:0 2px 8px var(--shad);min-width:80px}
 .wel-stat .n{font-size:1.3rem;font-weight:900;color:var(--a)}
 .wel-stat .l{font-size:.68rem;color:var(--tx3);margin-top:1px}
+
+.wel-start-cta{display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,var(--indigo-l,#eef2ff),var(--surf2));
+  border:2px solid var(--brd2);border-radius:16px;padding:14px 20px;
+  cursor:pointer;margin-bottom:18px;gap:12px;transition:.15s;
+  box-shadow:0 2px 8px var(--shad)}
+.wel-start-cta:hover{border-color:var(--a);transform:translateY(-2px);
+  box-shadow:0 6px 18px var(--shad2)}
+.wel-cta-lbl{font-size:.72rem;font-weight:700;color:var(--tx3)}
+.wel-cta-link{font-size:.92rem;font-weight:800;color:var(--ad);
+  display:flex;align-items:center;gap:6px}
+.wel-cta-arrow{font-size:1.1rem;color:var(--a)}
 
 .wel-guide-title{font-size:.82rem;font-weight:800;color:var(--tx3);
   text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;text-align:center}
@@ -1038,6 +1090,13 @@ body {
   </div>
 
   <button class="wel-mobile-open" onclick="toggleSB()">📂 카테고리 선택하기 · Open Categories</button>
+  <div class="wel-start-cta" onclick="showCat(1)" role="button" tabindex="0">
+    <div>
+      <div class="wel-cta-lbl">🚀 처음이라면 여기서 시작하세요! · Start here if you're new</div>
+      <div class="wel-cta-link">1. 🙏 인사 표현 · Greetings &amp; Expressions <span class="wel-cta-arrow">→</span></div>
+    </div>
+    <div style="font-size:2rem">👋</div>
+  </div>
   <div class="wel-guide-title">📖 학습 가이드 · How to Study</div>
   <div class="wel-flow">
     <div class="wel-flow-row">
@@ -1095,11 +1154,11 @@ body {
         <div class="wel-eval-marker" id="eval-marker" style="left:0%"></div>
       </div>
       <div class="wel-eval-scale">
-        <span>완전<br>초보</span>
-        <span>TOPIK<br>1급</span>
-        <span>TOPIK<br>2급</span>
-        <span>초중급<br>Elem.</span>
-        <span>3급<br>준비</span>
+        <span>입문<br>A1 Beg.</span>
+        <span>초급<br>A1</span>
+        <span>초중급<br>A2</span>
+        <span>중급 준비<br>B1 Prep</span>
+        <span>중급<br>B1</span>
       </div>
     </div>
     <div class="wel-eval-status" id="eval-status">로그인 후 확인 · Log in to see your level</div>
@@ -1278,11 +1337,60 @@ let LF = 0;             // level filter (0=all, 1/2/3)
 // Card view
 let CW=[], CI=0, CDir='koen', CSF=-1;
 // Quiz
-let QW=[], QI=0, QS=0, QA=null, QSF=-1, QDir='koen';
+let QW=[], QI=0, QS=0, QA=null, QSF=-1, QDir='koen', QWrong=[];
 // Flashcard
 let FCW=[], FCI=0, FCFlipped=false;
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  // Block if typing in input or modal open
+  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  const authOpen = document.getElementById('auth-overlay')?.style.display !== 'none';
+  const mpOpen   = document.getElementById('mp-overlay')?.classList.contains('open');
+  const nudgeOpen= document.getElementById('nudge-overlay')?.classList.contains('open');
+  const confirmOpen=document.getElementById('confirm-overlay')?.classList.contains('open');
+  const fcOpen   = document.getElementById('fco')?.classList.contains('on');
+  if (authOpen || mpOpen || nudgeOpen || confirmOpen) return;
+
+  // Flashcard modal
+  if (fcOpen) {
+    if (e.key==='Escape') closeFC();
+    if (e.key==='ArrowLeft' && typeof FCPrev==='function') { e.preventDefault(); FCPrev(); }
+    if (e.key==='ArrowRight' && typeof FCNext==='function') { e.preventDefault(); FCNext(); }
+    if (e.key===' '||e.key==='Enter') { e.preventDefault(); fcFlip(); }
+    return;
+  }
+
+  // Card mode
+  if (CM==='card' && CC) {
+    if (e.key==='ArrowLeft')  { e.preventDefault(); cardNav(-1); }
+    if (e.key==='ArrowRight') { e.preventDefault(); cardNav(1);  }
+    if (e.key===' ' || e.key==='Enter') {
+      e.preventDefault();
+      const btn = document.getElementById('cconfirm-btn');
+      if (btn && !btn.classList.contains('done')) confirmCard();
+      else cardNav(1);
+    }
+  }
+
+  // Quiz mode
+  if (CM==='quiz' && CC) {
+    if (['1','2','3','4'].includes(e.key)) {
+      const btn = document.getElementById('opt'+(parseInt(e.key)-1));
+      if (btn && !btn.disabled) { e.preventDefault(); btn.click(); }
+    }
+    if ((e.key==='Enter'||e.key===' ') && QA!==null) {
+      const nxt = document.getElementById('qnxt');
+      if (nxt && nxt.style.display!=='none') { e.preventDefault(); nxt.click(); }
+    }
+  }
+
+  // Escape: go home or close
+  if (e.key==='Escape' && CC) { e.preventDefault(); showWelcome(); }
+});
+
 auth.onAuthStateChanged(async user => {
   if (user) {
     currentUser = user;
@@ -1543,6 +1651,14 @@ function updateFilterBtns() {
     btn.textContent = MASTERY_LABEL[lv] + ' ' + cnt[lv];
   });
 }
+function undoMastery(e) {
+  e.stopPropagation();
+  if (!CW.length || !CC) return;
+  const w = CW[CI];
+  const lv = getMastery(CC.id, w.no);
+  if (lv > 0) { setMastery(CC.id, w.no, lv-1); renderCard(); }
+}
+
 function confirmCard() {
   if (!CW.length) return;
   const w = CW[CI];
@@ -1567,11 +1683,11 @@ function updateEvalBar() {
   fill.style.width=pct+'%';
   marker.style.left=pct+'%';
   let lvTxt='';
-  if(pct<10) lvTxt='완전 초보 · Beginner — 첫 카테고리부터 시작해 보세요!';
-  else if(pct<30) lvTxt='TOPIK 1급 준비 중 · Level 1 Prep — 잘하고 있어요! Keep going!';
-  else if(pct<60) lvTxt='TOPIK 1급 수준 · Level 1 — 기초가 탄탄해지고 있어요!';
-  else if(pct<85) lvTxt='TOPIK 2급 수준 · Level 2 — 어휘력이 많이 늘었어요!';
-  else lvTxt='TOPIK 2급+ 완성 · Level 2+ — 대단해요! 3급에 도전해 보세요! 🎉';
+  if(pct<10) lvTxt='입문 단계 · A1 Beginner — 첫 카테고리부터 시작해 보세요!';
+  else if(pct<30) lvTxt='초급 A1 · Elementary — 잘하고 있어요! Keep going!';
+  else if(pct<60) lvTxt='초중급 A2 · Pre-Intermediate — 기초가 탄탄해지고 있어요!';
+  else if(pct<85) lvTxt='중급 준비 B1 Prep · Intermediate — 어휘력이 많이 늘었어요!';
+  else lvTxt='중급 B1 · Intermediate — 대단해요! 3급 준비 시작할 수 있어요! 🎉';
   status.innerHTML=`<span class="eval-pct">${done}</span> / ${total} 단어 암기완료 (${pct}%) — ${lvTxt}`;
 }
 
@@ -1599,7 +1715,7 @@ function showWelcome() {
 }
 
 function renderSidebar() {
-  document.getElementById('clist').innerHTML = DATA.map(c => {
+  const renderCatItem = c => {
     const {done,sets} = catDone(c);
     const badge = done===sets&&sets>0
       ? '<span style="font-size:.65rem;color:#16a34a;font-weight:700">✓완료</span>'
@@ -1621,7 +1737,12 @@ function renderSidebar() {
       </div>
       <div class="cnt">${badge||c.words.length+'단어'}</div>
     </div>`;
-  }).join('') + `<div class="ci" id="ci-trivia" style="--cc:#f59e0b" onclick="showTriviaCat()">
+  };
+  const basics = DATA.filter(c=>c.id<=10).map(renderCatItem).join('');
+  const reallife = DATA.filter(c=>c.id>=11).map(renderCatItem).join('');
+  document.getElementById('clist').innerHTML =
+    '<div class="sb-sec">📚 L1 · L2 기초</div>' + basics +
+    '<div class="sb-sec">🗣️ 실생활 표현</div>' + reallife + `<div class="ci" id="ci-trivia" style="--cc:#f59e0b" onclick="showTriviaCat()">
       <div class="cn">★</div>
       <div class="cl">
         <div class="cko">🌟 K-Culture Trivia</div>
@@ -1703,7 +1824,8 @@ function renderList() {
         <div class="bh-left">
           <span>Set ${sn} · ${s1}~${s2}번${setDone?' <span style="opacity:.8">('+setDone+')</span>':''}</span>
         </div>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;align-items:center">
+          ${sn===1?`<button class="en-toggle" id="en-toggle-btn" onclick="toggleHideEn(this)">👁 영어 보기</button>`:'<span></span>'}
           <button class="fbt" onclick="setModeQuizSet(${sn-1})">❓ 퀴즈 · Quiz</button>
           <button class="fbt" onclick="openFC(${c.id},${sn-1})">🎴 플래시카드 · Flashcard</button>
         </div>
@@ -1785,8 +1907,12 @@ function renderCard(){
     const _lv = getMastery(CC.id, w.no);
     front.innerHTML=`<div class="cf-ko">${w.k} ${gramLabel(w.k)}</div>
       <div class="card-tts-row"><button class="ctts" onclick="speak('${w.k.replace(/'/g,"\\'")}','ko');event.stopPropagation()">🔊 한국어</button></div>
-      <span class="mastery-badge ${MASTERY_CLS[_lv]}" id="mbadge">${MASTERY_LABEL[_lv]}</span>
-      <div class="cf-hint">탭해서 영어 보기 · Tap for English</div>`;
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+        <span class="mastery-badge ${MASTERY_CLS[_lv]}" id="mbadge">${MASTERY_LABEL[_lv]}</span>
+        ${_lv>0?`<button class="mastery-undo" onclick="undoMastery(event)" title="마스터리 되돌리기">↩ 되돌리기</button>`:''}
+      </div>
+      <div class="cf-hint">탭해서 영어 보기 · Tap for English</div>
+      <div class="card-kbd-tip"><span class="kbd-hint">←</span> Prev &nbsp;<span class="kbd-hint">Space</span> Confirm &nbsp;<span class="kbd-hint">→</span> Next</div>`;
     back.innerHTML=`<div class="cb-en">${w.e}</div><div class="cb-sen">${w.s||''}</div>
       <div class="card-tts-row"><button class="ctts" onclick="speak('${w.e.replace(/'/g,"\\'")}','en');event.stopPropagation()">🔊 English</button></div>`;
   } else {
@@ -1817,14 +1943,6 @@ function cardNav(d){
   document.getElementById('cb').style.display='none';
   renderCard();
 }
-document.addEventListener('keydown',e=>{
-  if(CM==='card'){
-    if(e.key==='ArrowRight')cardNav(1);
-    else if(e.key==='ArrowLeft')cardNav(-1);
-    else if(e.key===' '){e.preventDefault();cardFlip();}
-  }
-});
-
 // ── QUIZ VIEW ─────────────────────────────────────────────────────────────────
 function initQuiz(sf){
   QSF=sf!==undefined?sf:-1; QDir='koen';
@@ -1833,7 +1951,7 @@ function initQuiz(sf){
 function applyQuizFilter(){
   const pool=QSF<0?[...CC.words]:CC.words.slice(QSF*10,(QSF+1)*10);
   const filtered=pool;
-  QW=shuffle([...filtered]); QI=0; QS=0; QA=null;
+  QW=shuffle([...filtered]); QI=0; QS=0; QA=null; QWrong=[];
 }
 function renderQuizUI(){
   const c=CC,sets=Math.ceil(c.words.length/10);
@@ -1864,6 +1982,29 @@ function renderQuizUI(){
   renderQuizQ();
 }
 function setQDir(d){ QDir=d; applyQuizFilter(); renderQuizUI(); }
+
+function studyWrongWords() {
+  if (!QWrong.length) return;
+  QW = [...QWrong]; QI=0; QS=0; QA=null; QWrong=[]; QSF=-1;
+  document.getElementById('qbody').innerHTML='';
+  renderQuizQ();
+}
+
+function toggleHideEn(btn) {
+  const lv = document.getElementById('lv');
+  const hidden = lv.classList.toggle('hide-en');
+  btn.textContent = hidden ? '👁 영어 가리기 ON' : '👁 영어 보기';
+  btn.classList.toggle('on', hidden);
+  if (hidden) {
+    lv.querySelectorAll('.ec').forEach(el => {
+      el.onclick = function(e) {
+        if (!lv.classList.contains('hide-en')) return;
+        el.style.color = el.style.color ? '' : 'var(--tx)';
+        el.style.background = el.style.background ? '' : 'transparent';
+      };
+    });
+  }
+}
 function renderQuizQ(){
   if(QI>=QW.length){
     const pct=QW.length?Math.round(QS/QW.length*100):0;
@@ -1880,8 +2021,8 @@ function renderQuizQ(){
         logQuizAttempt(CC.id,-1,sc,pct);
       }
     } else {
-      // Guest: show nudge after short delay
-      setTimeout(showNudge, 1400);
+      // Guest: show nudge after user has had time to read score
+      setTimeout(showNudge, 3800);
     }
     // ── XP award ──
     const _xpEarned = Math.round(pct/10)*2 + (pct===100?10:0);
@@ -1890,19 +2031,36 @@ function renderQuizQ(){
     GAME_DATA.wordsStudied = Math.max(GAME_DATA.wordsStudied||0, Object.keys(PROG).length*10);
     if(_xpEarned>0) addXP(_xpEarned);
     renderSidebar();
+    const _wrongHtml = QWrong.length ? `
+      <div class="wrong-review">
+        <div class="wrong-review-title">❌ 틀린 단어 복습 · Review Mistakes (${QWrong.length}개)</div>
+        ${QWrong.map(w=>`<div class="wrong-row">
+          <span class="wrong-ko">${w.k}</span>
+          <span class="wrong-en">${w.e.replace(/\s*\([^)]*·[^)]*\)/g,'')}</span>
+          <button onclick="speak('${w.k.replace(/'/g,"\\'")}\'','ko');event.stopPropagation()"
+            style="background:none;border:none;cursor:pointer;font-size:.88rem;padding:0 4px">🔊</button>
+        </div>`).join('')}
+        <button class="wrong-practice" onclick="studyWrongWords()">↺ 이 단어만 다시 연습 · Practice wrong words</button>
+      </div>` : '';
     document.getElementById('qbody').innerHTML=`
       <div class="qcard">
-        <div class="qword">🎉 완료! · Complete!</div>
-        <div class="qpron">점수: ${QS} / ${QW.length} (${pct}%)</div>
-        ${QSF>=0?`<div style="color:#16a34a;font-weight:700;margin-top:8px;font-size:.88rem">✓ Set ${QSF+1} 저장됨! · Saved!</div>`:''}
+        <div class="qword">${pct===100?'🎉':'📊'} ${pct===100?'완벽!':'완료!'} · ${pct===100?'Perfect!':'Done!'}</div>
+        <div class="qpron" style="font-size:1.3rem;font-weight:800">${QS} / ${QW.length} <span style="font-size:.85rem;font-weight:600">(${pct}%)</span></div>
+        ${pct>=80?'<div style="color:#16a34a;font-weight:700;margin-top:4px;font-size:.82rem">✅ 통과! · Passed (80%+)</div>':pct>=60?'<div style="color:#d97706;font-weight:700;margin-top:4px;font-size:.82rem">🟡 아직 조금 더! · Almost there!</div>':'<div style="color:#dc2626;font-weight:700;margin-top:4px;font-size:.82rem">💪 다시 도전! · Try again!</div>'}
+        ${QSF>=0?`<div style="color:#16a34a;font-size:.78rem;margin-top:4px">✓ Set ${QSF+1} 저장됨 · Saved</div>`:''}
       </div>
-      <button class="qnext" style="display:block" onclick="applyQuizFilter();renderQuizUI()">↺ 다시 시작 · Try Again</button>
+      ${_wrongHtml}
+      <button class="qnext" style="display:block;margin-top:14px" onclick="applyQuizFilter();renderQuizUI()">↺ 다시 시작 · Try Again</button>
       ${QSF>=0&&QSF<Math.ceil(CC.words.length/10)-1?
         `<button class="qnext" style="display:block;margin-top:8px" onclick="initQuiz(${QSF+1})">▶ 다음 Set ${QSF+2} · Next Set</button>`:''}`;
     return;
   }
   const w=QW[QI];
-  const getAns=o=>QDir==='koen'?o.e:o.k;
+  // Strip Korean register labels in quiz options: '(formal · 격식체)' → '(formal)'
+  const getAns=o=>{
+    const raw=QDir==='koen'?o.e:o.k;
+    return raw.replace(/\s*\(([^·)]+)\s*·\s*[^)]+\)/g,' ($1)').trim();
+  };
   // Deduplicate wrong options by displayed answer text to prevent identical choices
   const seenAns=new Set([getAns(w)]);
   const pool=shuffle(CC.words.filter(x=>x!==w)).filter(x=>{
@@ -1928,7 +2086,8 @@ function renderQuizQ(){
 }
 function answerQ(idx,correct){
   if(QA!==null)return; QA=idx;
-  if(correct)QS++;
+  if(correct) QS++;
+  else QWrong.push(QW[QI]); // track wrong answers
   document.querySelectorAll('.opt').forEach((b,i)=>{
     b.disabled=true;
     if(i===idx) b.classList.add(correct?'correct':'wrong');

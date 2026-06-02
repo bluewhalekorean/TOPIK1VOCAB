@@ -257,6 +257,8 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
   transition:box-shadow .15s,transform .15s;user-select:none;position:relative}
 .card:hover{box-shadow:0 10px 32px var(--shad2);transform:translateY(-2px)}
 .card-front,.card-back{width:100%}
+.card-face-anim{animation:cfadein .16s ease}
+@keyframes cfadein{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
 .cf-ko{font-size:1.85rem;font-weight:800;color:var(--tx);margin-bottom:8px}
 .cf-hint{font-size:.74rem;color:var(--tx3);margin-top:8px}
 .cb-en{font-size:1.25rem;font-weight:700;color:var(--tx);margin-bottom:8px}
@@ -1313,12 +1315,14 @@ body {
       <button class="mptab" onclick="switchMpTab(2,this)">📊 문법 · Grammar</button>
       <button class="mptab" onclick="switchMpTab(3,this)">🏅 뱃지 · Badges</button>
       <button class="mptab" onclick="switchMpTab(4,this)">📝 퀴즈 기록 · Quiz History</button>
+      <button class="mptab" onclick="switchMpTab(5,this)">🧠 마스터리 · Mastery</button>
     </div>
     <div id="mp-panel-0" class="mp-panel active"></div>
     <div id="mp-panel-1" class="mp-panel"></div>
     <div id="mp-panel-2" class="mp-panel"></div>
     <div id="mp-panel-3" class="mp-panel"></div>
     <div id="mp-panel-4" class="mp-panel"></div>
+    <div id="mp-panel-5" class="mp-panel"></div>
   </div>
 </div>
 
@@ -1692,6 +1696,12 @@ function rebuildCardPool() {
   CW = shuffle(pool.filter(w => C_FILTER.has(getMastery(CC.id, w.no))));
   CI = 0;
   updateFilterBtns();
+  // Update remaining count hint
+  const _filterActive = C_FILTER.size < 3;
+  const _pgNum = document.getElementById('cpgn');
+  if (_pgNum && _filterActive) {
+    _pgNum.innerHTML = `${CI+1} / ${CW.length} <span style="font-size:.65rem;color:var(--tx3)">(필터 적용)</span>`;
+  }
   if (!CW.length) {
     document.getElementById('cf').innerHTML =
       '<div class="card-empty">이 필터에 해당하는 단어가 없어요.<br><span style="font-size:.8rem;color:var(--tx3)">No words match this filter.</span></div>';
@@ -1808,7 +1818,7 @@ function renderSidebar() {
       +`<div style="width:${p2}%;background:#10b981;border-radius:2px 0 0 2px;height:100%"></div>`
       +`<div style="width:${p1}%;background:#f59e0b;height:100%"></div>`
       +`<div style="width:${p0}%;background:#e5e7eb;border-radius:0 2px 2px 0;height:100%"></div></div>`;
-    return `<div class="ci" id="ci${c.id}" style="--cc:${c.color}" onclick="showCat(${c.id})">
+    return `<div class="ci" id="ci${c.id}" style="--cc:${c.color}" onclick="showCat(${c.id})" role="button" tabindex="0" aria-label="${c.ko}" onkeydown="if(event.key==='Enter')showCat(${c.id})">
       <div class="cn">${c.id}</div>
       <div class="cl">
         <div class="cko">${c.ko}</div>
@@ -1822,7 +1832,7 @@ function renderSidebar() {
   const reallife = DATA.filter(c=>c.id>=11).map(renderCatItem).join('');
   document.getElementById('clist').innerHTML =
     '<div class="sb-sec">📚 L1 · L2 기초</div>' + basics +
-    '<div class="sb-sec">🗣️ 실생활 표현</div>' + reallife + `<div class="ci" id="ci-trivia" style="--cc:#f59e0b" onclick="showTriviaCat()">
+    '<div class="sb-sec">🗣️ 실생활 표현</div>' + reallife + `<div class="ci" id="ci-trivia" style="--cc:#f59e0b" onclick="showTriviaCat()" role="button" tabindex="0" aria-label="K-Culture Trivia" onkeydown="if(event.key==='Enter')showTriviaCat()">
       <div class="cn">★</div>
       <div class="cl">
         <div class="cko">🌟 K-Culture Trivia</div>
@@ -1982,6 +1992,8 @@ function renderCard(){
   const w=CW[CI];
   const front=document.getElementById('cf'), back=document.getElementById('cb');
   front.style.display=''; back.style.display='none';
+  // Fade animation on card change
+  front.classList.remove('card-face-anim'); void front.offsetWidth; front.classList.add('card-face-anim');
   if(CDir==='koen'){
     const _mk = getMastery(CC.id, w.no);
     if (_mk === 0) setMastery(CC.id, w.no, 1); // first view → 조금 알겠어요
@@ -2016,6 +2028,9 @@ function cardFlip(){
   if(!f||!b)return;
   const showing=f.style.display!=='none';
   f.style.display=showing?'none':'';b.style.display=showing?'':'none';
+  // Fade on flip
+  const shown=showing?b:f;
+  shown.classList.remove('card-face-anim'); void shown.offsetWidth; shown.classList.add('card-face-anim');
 }
 function cardNav(d){
   if(!CW.length) return;
@@ -2165,6 +2180,13 @@ function renderQuizQ(){
         +`<span class="kbd-hint" style="margin-right:6px;vertical-align:middle">${i+1}</span>${getAns(o)}</button>`).join('')}
     </div>
     <button class="qnext" id="qnxt" onclick="nextQ()">다음 · Next ▶</button>`;
+  // Show correct/wrong tally as small progress
+  const _qbar=document.getElementById('qsc');
+  if(_qbar) {
+    const _pct=QI>0?Math.round(QS/QI*100):0;
+    const _col=_pct>=80?'#16a34a':_pct>=60?'#d97706':'#dc2626';
+    _qbar.innerHTML=`<span style="color:${_col};font-weight:700">${QS}</span><span style="color:var(--tx3)"> / ${QI}</span>`;
+  }
   setTimeout(()=>speak(question, QDir==='koen'?'ko':'en'), 150);
 }
 function answerQ(idx,correct){
@@ -2272,6 +2294,7 @@ async function openMyPage(){
   renderMpCats(PROG);
   renderMpGram(PROG);
   renderMpBadges();
+  renderMpMastery();
 
   // Fetch Firestore in background and re-render overview
   let timeSpent={}, userData={}, logs=[];
@@ -2309,6 +2332,13 @@ function renderMpOverview(prog, timeSpent, ud){
   // Avg quiz score
   const allPcts=Object.values(prog).map(s=>s&&s.pct?s.pct:0).filter(Boolean);
   const avgPct=allPcts.length?Math.round(allPcts.reduce((a,b)=>a+b)/allPcts.length):0;
+  // Mastery stats from localStorage
+  let m0=0,m1=0,m2=0,mTotal=0;
+  DATA.forEach(cat=>cat.words.forEach(w=>{
+    mTotal++;
+    const lv=getMastery(cat.id,w.no);
+    if(lv===2)m2++; else if(lv===1)m1++; else m0++;
+  }));
   document.getElementById('mp-panel-0').innerHTML=`
     <div class="streak-box">
       <div class="streak-fire">🔥</div>
@@ -2324,13 +2354,54 @@ function renderMpOverview(prog, timeSpent, ud){
       <div class="mp-stat"><div class="n">${avgPct}%</div><div class="l">평균 퀴즈 점수 · Avg Score</div></div>
       <div class="mp-stat"><div class="n">${fmtSecs(totalSecs)}</div><div class="l">총 학습 시간 · Study Time</div></div>
     </div>
+    <div style="background:var(--surf);border-radius:14px;padding:14px 18px;border:1px solid var(--brd2);margin-bottom:14px">
+      <div class="mp-sec-title" style="margin-bottom:10px">🧠 단어 마스터리 · Word Mastery</div>
+      <div style="display:flex;gap:0;height:12px;border-radius:6px;overflow:hidden;margin-bottom:8px">
+        <div style="width:${Math.round(m2/mTotal*100)}%;background:#10b981;transition:width .4s"></div>
+        <div style="width:${Math.round(m1/mTotal*100)}%;background:#f59e0b"></div>
+        <div style="flex:1;background:#e5e7eb"></div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.76rem">
+        <span style="color:#10b981;font-weight:600">✅ 확실히 알겠어요 ${m2}단어</span>
+        <span style="color:#f59e0b;font-weight:600">🌱 조금 알겠어요 ${m1}단어</span>
+        <span style="color:#94a3b8;font-weight:600">❓ 잘 모르겠어요 ${m0}단어</span>
+      </div>
+    </div>
     <div style="background:var(--surf);border-radius:14px;padding:14px 18px;border:1px solid var(--brd2)">
-      <div class="mp-sec-title" style="margin-bottom:8px">전체 진도 · Overall Progress</div>
+      <div class="mp-sec-title" style="margin-bottom:8px">전체 퀴즈 진도 · Overall Progress</div>
       <div class="pgtrack" style="height:12px;border-radius:6px">
         <div class="pgfill" style="width:${pct}%;background:var(--a);height:100%;border-radius:6px"></div>
       </div>
       <div style="text-align:right;font-size:.76rem;color:var(--tx3);margin-top:4px">${totalDone} / ${TOTAL_SETS} Sets 완료</div>
     </div>`;
+}
+
+function renderMpMastery(){
+  let html='<div class="mp-sec-title" style="margin-bottom:16px">🧠 단어별 마스터리 현황 · Word Mastery</div>';
+  DATA.forEach(cat=>{
+    const m0=[],m1=[],m2=[];
+    cat.words.forEach(w=>{
+      const lv=getMastery(cat.id,w.no);
+      if(lv===2)m2.push(w); else if(lv===1)m1.push(w); else m0.push(w);
+    });
+    const total=cat.words.length;
+    const p2=Math.round(m2.length/total*100);
+    const p1=Math.round(m1.length/total*100);
+    html+=`<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span style="font-size:.8rem;font-weight:600;color:var(--tx)">${cat.ko}</span>
+        <span style="font-size:.72rem;color:var(--tx3)">${m2.length}/${total} 완료</span>
+      </div>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden">
+        <div style="width:${p2}%;background:#10b981;transition:.4s"></div>
+        <div style="width:${p1}%;background:#f59e0b"></div>
+        <div style="flex:1;background:#e5e7eb"></div>
+      </div>
+      ${m0.length&&m0.length<=5?`<div style="font-size:.68rem;color:#94a3b8;margin-top:3px">`
+        +`❓ ${m0.map(w=>w.k).join(', ')}</div>`:''}
+    </div>`;
+  });
+  document.getElementById('mp-panel-5').innerHTML=html;
 }
 
 function renderMpCats(prog){

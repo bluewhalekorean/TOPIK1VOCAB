@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TOPIK I 단어장</title>
+<title>TOPIK 1-2급 단어장</title>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -312,10 +312,52 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 .streak-n{font-size:1.5rem;font-weight:800;color:var(--tx);line-height:1}
 .streak-lbl{font-size:.74rem;color:var(--tx3);margin-top:2px}
 
+/* ── Streak Hero (landing) ── */
+#sh-guest{padding:70px 20px;text-align:center;color:var(--tx2)}
+#sh-guest h2{font-size:1.5rem;color:var(--tx);margin-bottom:12px}
+#sh-guest p{line-height:2;font-size:.92rem}
+#sh{text-align:center;padding:28px 16px 20px;max-width:460px;margin:0 auto}
+.sh-greeting{font-size:.88rem;color:var(--tx2);font-weight:600;margin-bottom:16px}
+.sh-flame-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:18px;cursor:pointer}
+.sh-flame{font-size:5rem;line-height:1;filter:drop-shadow(0 4px 8px rgba(194,119,58,.4));
+  animation:sh-pulse 2.5s ease-in-out infinite}
+@keyframes sh-pulse{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.12) rotate(4deg)}}
+.sh-flame.inactive{animation:none;filter:grayscale(1);opacity:.45}
+.sh-streak-num{font-size:5.5rem;font-weight:900;color:var(--tx);line-height:1;letter-spacing:-.06em}
+.sh-streak-lbl{font-size:.8rem;font-weight:700;color:var(--tx2);letter-spacing:.03em;margin-top:3px}
+.sh-streak-msg{font-size:.88rem;color:var(--a);font-weight:600;margin-top:7px;min-height:18px}
+.sh-milestones{display:flex;gap:5px;justify-content:center;margin:10px 0 18px;flex-wrap:wrap}
+.sh-ms{padding:3px 10px;border-radius:20px;font-size:.69rem;font-weight:700}
+.sh-ms.done{background:var(--l1bg);color:var(--l1);border:1px solid var(--l1bd)}
+.sh-ms.next{background:var(--al);color:var(--ad);border:1px solid var(--am)}
+.sh-ms.todo{background:var(--surf2);color:var(--tx3);border:1px solid var(--brd)}
+.sh-goal-card{background:var(--surf);border-radius:16px;padding:16px 20px;
+  margin-bottom:16px;border:1.5px solid var(--brd);box-shadow:0 2px 8px var(--shad);text-align:left}
+.sh-goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sh-goal-lbl{font-size:.8rem;font-weight:700;color:var(--tx)}
+.sh-goal-time{font-size:.8rem;font-weight:700;color:var(--a);font-variant-numeric:tabular-nums}
+.sh-bar-bg{height:10px;background:var(--brd2);border-radius:10px;overflow:hidden}
+.sh-bar-fill{height:100%;background:linear-gradient(90deg,var(--a),#f59e0b);
+  border-radius:10px;width:0%;transition:width .6s ease}
+.sh-bar-fill.done{background:linear-gradient(90deg,var(--l1),#059669)}
+.sh-hint{font-size:.72rem;color:var(--tx3);margin-top:8px}
+.sh-wotd{background:linear-gradient(135deg,#fffcf5,#fff7ed);border-radius:14px;
+  padding:14px 18px;margin-bottom:16px;border:1.5px solid var(--brd2);
+  text-align:left;cursor:pointer;transition:.15s;box-shadow:0 2px 6px var(--shad)}
+.sh-wotd:hover{transform:translateY(-2px);box-shadow:0 5px 14px var(--shad2)}
+.sh-wotd-tag{font-size:.67rem;font-weight:800;color:var(--a);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:6px}
+.sh-wotd-word{font-size:1.5rem;font-weight:800;color:var(--tx);margin-bottom:2px}
+.sh-wotd-en{font-size:.84rem;color:var(--tx2);margin-bottom:4px}
+.sh-wotd-sen{font-size:.78rem;color:var(--tx3);font-style:italic}
+.sh-cta{display:block;width:100%;padding:14px;border-radius:14px;border:none;
+  cursor:pointer;font-family:inherit;font-weight:800;font-size:.98rem;
+  background:linear-gradient(135deg,var(--a),var(--ad));color:#fff;
+  box-shadow:0 4px 14px rgba(194,119,58,.4);transition:.15s;letter-spacing:-.01em}
+.sh-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(194,119,58,.5)}
+@keyframes sh-celebrate{0%,100%{transform:scale(1)}40%{transform:scale(1.05)}}
 /* ── Welcome ── */
-#wel{text-align:center;padding:70px 20px;color:var(--tx2)}
-#wel h2{font-size:1.5rem;color:var(--tx);margin-bottom:12px}
-#wel p{line-height:2;font-size:.92rem}
+#wel{color:var(--tx2)}
 
 /* ── Search results ── */
 #sv{display:none}
@@ -339,7 +381,7 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 <div id="auth-overlay">
   <div id="auth-box">
     <div class="auth-logo">📚</div>
-    <div class="auth-title">TOPIK I 단어장<br><span style="font-size:.75rem;font-weight:400;color:var(--tx3)">Korean Vocabulary</span></div>
+    <div class="auth-title">TOPIK 1-2급 단어장<br><span style="font-size:.75rem;font-weight:400;color:var(--tx3)">Korean Vocabulary</span></div>
     <div class="auth-sub" id="auth-sub">학습 진도를 저장하려면 로그인하세요 · Log in to save your progress</div>
     <div class="auth-tabs">
       <button class="atab active" id="tab-login" onclick="switchAuthTab('login')">로그인 · Login</button>
@@ -359,8 +401,8 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 <div id="hdr">
   <button id="hbg" onclick="toggleSB()">☰</button>
   <div class="htxt">
-    <div class="sub">TOPIK I · 1,671단어 · 20 Categories</div>
-    <h1>📚 상황별 단어장 <span style="font-weight:400;opacity:.7;font-size:.82rem">· Vocabulary</span></h1>
+    <div class="sub">TOPIK 1-2급 · 1,671단어 · 20 Categories</div>
+    <h1>📚 TOPIK 1-2급 단어장 <span style="font-weight:400;opacity:.7;font-size:.82rem">· Vocabulary</span></h1>
   </div>
   <input id="srch" type="text" placeholder="🔍 검색 · Search..." oninput="doSearch(this.value)">
   <div id="uarea">
@@ -377,10 +419,40 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
 
 <div id="main">
   <div id="wel">
-    <h2>📚 TOPIK I 상황별 단어장</h2><p style="font-size:1rem;color:var(--a);margin-top:-6px;margin-bottom:8px">Korean Vocabulary by Situation</p>
-    <p>왼쪽에서 카테고리를 선택해 학습을 시작하세요 · Select a category on the left to start.<br>
-    목록 · 카드 · 퀴즈 3가지 모드 · List, Card, and Quiz modes available.<br>
-    🟢 Level 1 (Easy) → 🟡 Level 2 (Medium) → 🔴 Level 3 (Hard)</p>
+    <!-- 비로그인 환영 메시지 -->
+    <div id="sh-guest">
+      <h2>📚 TOPIK 1-2급 단어장</h2>
+      <p style="font-size:1rem;color:var(--a);margin-top:-6px;margin-bottom:8px">Korean Vocabulary by Situation</p>
+      <p>왼쪽에서 카테고리를 선택해 학습을 시작하세요 · Select a category on the left to start.<br>
+      목록 · 카드 · 퀴즈 3가지 모드 · List, Card, and Quiz modes available.<br>
+      🟢 Level 1 (Easy) → 🟡 Level 2 (Medium) → 🔴 Level 3 (Hard)</p>
+    </div>
+    <!-- 로그인 후 Streak Hero -->
+    <div id="sh" style="display:none">
+      <div class="sh-greeting" id="sh-greeting"></div>
+      <div class="sh-flame-wrap" onclick="openMyPage()">
+        <div class="sh-flame" id="sh-flame">🔥</div>
+        <div class="sh-streak-num" id="sh-num">0</div>
+        <div class="sh-streak-lbl">일 연속 학습 · Day Streak</div>
+        <div class="sh-streak-msg" id="sh-msg"></div>
+      </div>
+      <div class="sh-milestones" id="sh-miles"></div>
+      <div class="sh-goal-card">
+        <div class="sh-goal-top">
+          <span class="sh-goal-lbl">⏱ 오늘의 목표 · Daily Goal</span>
+          <span class="sh-goal-time" id="sh-goal-time">0분 0초 / 10분</span>
+        </div>
+        <div class="sh-bar-bg"><div class="sh-bar-fill" id="sh-bar"></div></div>
+        <div class="sh-hint" id="sh-hint">10분만 공부해도 하루 30단어를 익힐 수 있어요!</div>
+      </div>
+      <div class="sh-wotd" id="sh-wotd" onclick="sh_wotdClick()">
+        <div class="sh-wotd-tag">💡 오늘의 단어 · Word of the Day</div>
+        <div class="sh-wotd-word" id="sh-wotd-word">—</div>
+        <div class="sh-wotd-en" id="sh-wotd-en"></div>
+        <div class="sh-wotd-sen" id="sh-wotd-sen"></div>
+      </div>
+      <button class="sh-cta" onclick="sh_startStudy()">📖 오늘 학습 시작하기 ▶</button>
+    </div>
   </div>
   <div id="sv" style="display:none"></div>
   <div id="cv" style="display:none">
@@ -437,8 +509,8 @@ body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif
       <button class="fnb" onclick="fcNav(1)">다음 · Next ▶</button>
     </div>
     <div class="fcbtns">
-      <button class="fcbt" onclick="fcTTS('ko')">🔊 한국어</button>
-      <button class="fcbt" onclick="fcTTS('en')">🔊 English</button>
+      <button class="fcbt" onclick="fcTTS('ko')">🔊 단어 읽기</button>
+      <button class="fcbt" onclick="fcTTS('sen')">🔊 예문 읽기</button>
     </div>
   </div>
 </div>
@@ -490,10 +562,21 @@ auth.onAuthStateChanged(async user => {
     await loadProgress();
     updateLastSeen();
     renderSidebar();
+    // Load streak and show landing hero
+    try{
+      const uSnap=await db.collection('users').doc(user.uid).get();
+      const streak=uSnap.exists?(uSnap.data().streak||0):0;
+      startSessionTimer();
+      renderWelcome(streak, user.displayName||user.email.split('@')[0]);
+    }catch(e){startSessionTimer();renderWelcome(0,user.displayName||user.email.split('@')[0]);}
   } else {
     currentUser = null; PROG = {};
+    if(SESSION_TIMER){clearInterval(SESSION_TIMER);SESSION_TIMER=null;}
     document.getElementById('auth-overlay').style.display = 'flex';
     document.getElementById('uname').textContent = '';
+    // Reset landing to guest view
+    const sh=document.getElementById('sh'),sg=document.getElementById('sh-guest');
+    if(sh)sh.style.display='none'; if(sg)sg.style.display='';
     ['mypage-btn','logout-btn','admin-btn'].forEach(id=>document.getElementById(id).style.display='none');
   }
 });
@@ -565,6 +648,18 @@ async function saveProgress(cid, si, score) {
   const key = String(cid) + '_' + si;
   const parts = score.split('/');
   const pct = parts.length===2 ? Math.round(parseInt(parts[0])/parseInt(parts[1])*100) : 0;
+  const prevPct = PROG[key]?.pct || 0;
+  if (pct <= prevPct) {
+    PROG[key] = { ...PROG[key], attempts: (PROG[key]?.attempts||0)+1 };
+    try {
+      await db.collection('progress').doc(currentUser.uid).set({
+        ['sets.'+key+'.attempts']: firebase.firestore.FieldValue.increment(1),
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+        email: currentUser.email, displayName: currentUser.displayName||''
+      }, { merge: true });
+    } catch(e) {}
+    return;
+  }
   PROG[key] = { score, pct, attempts: (PROG[key]?.attempts||0)+1,
     lastAt: new Date().toISOString() };
   try {
@@ -882,8 +977,6 @@ function renderQuizQ(){
       logQuizAttempt(CC.id,QSF,sc,pct);
     } else {
       const sc=QS+'/'+QW.length;
-      const totalSets=Math.ceil(CC.words.length/10);
-      for(let i=0;i<totalSets;i++) saveProgress(CC.id,i,sc);
       logQuizAttempt(CC.id,-1,sc,pct);
     }
     renderSidebar();
@@ -968,7 +1061,117 @@ function fcFlip(){
   }
 }
 function fcNav(d){ FCI=Math.max(0,Math.min(FCW.length-1,FCI+d)); renderFC(); }
-function fcTTS(lang){ const w=FCW[FCI]; speak(lang==='ko'?w.k:w.e,lang==='ko'?'ko-KR':'en-US'); }
+function fcTTS(lang){ const w=FCW[FCI]; if(lang==='sen') speak(w.s||w.k,'ko-KR'); else speak(lang==='ko'?w.k:w.e,lang==='ko'?'ko-KR':'en-US'); }
+
+// ── Session Timer & Landing ───────────────────────────────────────────────────
+let SESSION_START=null, SESSION_TIMER=null, SESSION_SECS=0;
+
+function startSessionTimer(){
+  SESSION_START=Date.now(); SESSION_SECS=0;
+  if(SESSION_TIMER) clearInterval(SESSION_TIMER);
+  SESSION_TIMER=setInterval(()=>{
+    SESSION_SECS=Math.round((Date.now()-SESSION_START)/1000);
+    updateSessionBar();
+  },10000);
+}
+
+function updateSessionBar(){
+  const fill=document.getElementById('sh-bar');
+  const timeEl=document.getElementById('sh-goal-time');
+  const hint=document.getElementById('sh-hint');
+  if(!fill) return;
+  const pct=Math.min(100,Math.round(SESSION_SECS/600*100));
+  fill.style.width=pct+'%';
+  const mins=Math.floor(SESSION_SECS/60);
+  const secs=String(SESSION_SECS%60).padStart(2,'0');
+  if(pct>=100){
+    fill.classList.add('done');
+    if(timeEl) timeEl.textContent='✅ 오늘 목표 달성!';
+    if(hint) hint.textContent='🎉 훌륭해요! 오늘 10분 학습을 완료했어요!';
+  } else {
+    if(timeEl) timeEl.textContent=`${mins}분 ${secs}초 / 10분`;
+    const remMins=Math.ceil((600-SESSION_SECS)/60);
+    if(hint) hint.textContent=pct<50
+      ? '10분만 공부해도 하루 30단어를 익힐 수 있어요!'
+      : `조금만 더! 약 ${remMins}분 남았어요 💪`;
+  }
+  // celebrate the moment of hitting 10 min
+  if(SESSION_SECS>=600 && SESSION_SECS<610){
+    const sh=document.getElementById('sh');
+    if(sh){sh.style.animation='sh-celebrate .5s ease';setTimeout(()=>sh&&(sh.style.animation=''),600);}
+  }
+}
+
+function renderWelcome(streak, name){
+  const guest=document.getElementById('sh-guest');
+  const sh=document.getElementById('sh');
+  if(!sh) return;
+  guest.style.display='none';
+  sh.style.display='';
+
+  // Greeting by time of day
+  const h=new Date().getHours();
+  const greet=h<5?'밤늦게도 열공이네요 🌙':h<12?'좋은 아침이에요 ☀️':h<18?'안녕하세요 👋':'수고했어요 🌛';
+  document.getElementById('sh-greeting').textContent=`${greet}  ${name}님`;
+
+  // Streak
+  document.getElementById('sh-num').textContent=streak;
+  const flame=document.getElementById('sh-flame');
+  if(flame) flame.classList.toggle('inactive',streak===0);
+
+  // Motivational message by streak level
+  const msgs=[
+    [100,'전설이에요! 고래의 끈기 🐳'],
+    [30,`${streak}일 연속! 한 달 챔피언 🏆`],
+    [14,`${streak}일 연속! 정말 멋져요 🌟`],
+    [7,`${streak}일 연속! 한 주 달성 🎯`],
+    [3,`${streak}일 연속! 좋은 리듬이에요 💪`],
+    [1,'시작이 반이에요! 내일도 이어가요'],
+    [0,'오늘 첫 학습을 시작해볼까요? 🌱'],
+  ];
+  const msg=(msgs.find(([min])=>streak>=min)||msgs[msgs.length-1])[1];
+  document.getElementById('sh-msg').textContent=msg;
+
+  // Milestone chips: 3 · 7 · 14 · 30 · 60 · 100
+  const milestones=[3,7,14,30,60,100];
+  document.getElementById('sh-miles').innerHTML=milestones.map(m=>{
+    const cls=streak>=m?'sh-ms done':streak===m-1?'sh-ms next':'sh-ms todo';
+    return `<span class="${cls}">${streak>=m?'✓ ':''}${m}일</span>`;
+  }).join('');
+
+  // Word of the Day — rotate daily, prefer unmastered words
+  const allWords=DATA.flatMap(c=>c.words.map(w=>({...w,cid:c.id,catKo:c.ko,catColor:c.color})));
+  const unmastered=allWords.filter(w=>{
+    const key=String(w.cid)+'_'+Math.floor((w.no-1)/10);
+    return !(PROG[key]&&(PROG[key].pct||0)>=80);
+  });
+  const pool=unmastered.length?unmastered:allWords;
+  const dayNum=parseInt(new Date().toISOString().slice(0,10).replace(/-/g,''));
+  const wotd=pool[dayNum%pool.length];
+  if(wotd){
+    document.getElementById('sh-wotd-word').textContent=wotd.k;
+    document.getElementById('sh-wotd-en').textContent=wotd.e;
+    document.getElementById('sh-wotd-sen').textContent=wotd.s||'';
+    document.getElementById('sh-wotd').dataset.cid=wotd.cid;
+  }
+
+  updateSessionBar();
+}
+
+function sh_wotdClick(){
+  const cid=parseInt(document.getElementById('sh-wotd').dataset.cid||'0');
+  if(cid) showCat(cid);
+}
+
+function sh_startStudy(){
+  // Jump to the first category with unmastered sets
+  const cat=DATA.find(c=>{
+    const sets=Math.ceil(c.words.length/10);
+    for(let i=0;i<sets;i++){if(!(PROG[String(c.id)+'_'+i]&&(PROG[String(c.id)+'_'+i].pct||0)>=80))return true;}
+    return false;
+  })||DATA[0];
+  showCat(cat.id);
+}
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function speak(text,lang){

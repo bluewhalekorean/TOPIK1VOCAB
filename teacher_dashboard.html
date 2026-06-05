@@ -632,22 +632,26 @@ firebase.initializeApp(FB_CONFIG);
 const auth=firebase.auth(), db=firebase.firestore();
 
 const CATS=[
-  {id:1,ko:"🙏 인사 표현",   sets:2,color:"#6366f1"},
-  {id:2,ko:"🎒 기본 명사",   sets:3,color:"#8b5cf6"},
-  {id:3,ko:"🍜 음식 & 맛",  sets:2,color:"#ec4899"},
-  {id:4,ko:"🏃 동사 (L1)",  sets:3,color:"#f59e0b"},
-  {id:5,ko:"🔢 숫자 & 날짜",sets:3,color:"#10b981"},
-  {id:6,ko:"🕐 시간 & 장소",sets:3,color:"#0ea5e9"},
-  {id:7,ko:"⚡ 동사 (L2)",  sets:3,color:"#f97316"},
-  {id:8,ko:"📦 명사 (L2)",  sets:3,color:"#14b8a6"},
-  {id:9,ko:"✨ 형용사",      sets:3,color:"#a855f7"},
-  {id:10,ko:"📅 요일 & 날짜",sets:3,color:"#06b6d4"},
-  {id:11,ko:"🍽️ 식당 표현", sets:2,color:"#f97316"},
-  {id:12,ko:"🗺️ 길 묻기",  sets:2,color:"#10b981"},
-  {id:13,ko:"🤝 친해지기",  sets:2,color:"#8b5cf6"},
-  {id:14,ko:"💕 데이트",     sets:2,color:"#ec4899"},
-  {id:15,ko:"💼 비즈니스",  sets:2,color:"#1d4ed8"},
-  {id:16,ko:"🎬 드라마 & 감탄",sets:2,color:"#7c3aed"},
+  {id:1, ko:"인사 & 소개",    sets:8,  color:"#4472C4"},
+  {id:2, ko:"가족 & 친척",    sets:6,  color:"#70AD47"},
+  {id:3, ko:"사람 & 직업",    sets:6,  color:"#ED7D31"},
+  {id:4, ko:"음식 & 식재료",  sets:10, color:"#FFC000"},
+  {id:5, ko:"식당 & 요리",    sets:7,  color:"#C00000"},
+  {id:6, ko:"쇼핑 & 돈",      sets:5,  color:"#7030A0"},
+  {id:7, ko:"옷 & 패션",      sets:5,  color:"#00B0F0"},
+  {id:8, ko:"집 & 생활",      sets:7,  color:"#92D050"},
+  {id:9, ko:"학교 & 공부",    sets:10, color:"#0070C0"},
+  {id:10,ko:"직장 & 일",      sets:4,  color:"#843C0C"},
+  {id:11,ko:"교통 & 이동",    sets:8,  color:"#00B050"},
+  {id:12,ko:"여행 & 장소",    sets:12, color:"#FF7F50"},
+  {id:13,ko:"건강 & 병원",    sets:4,  color:"#FF69B4"},
+  {id:14,ko:"날씨 & 계절",    sets:4,  color:"#1F78B4"},
+  {id:15,ko:"자연 & 환경",    sets:4,  color:"#33A02C"},
+  {id:16,ko:"시간 & 날짜",    sets:11, color:"#6A3D9A"},
+  {id:17,ko:"신체 & 외모",    sets:4,  color:"#E31A1C"},
+  {id:18,ko:"취미 & 스포츠",  sets:8,  color:"#FF7F00"},
+  {id:19,ko:"감정 & 성격",    sets:7,  color:"#FB9A99"},
+  {id:20,ko:"기본 표현 & 수", sets:48, color:"#A6A6A6"},
 ];
 const TOTAL_SETS=CATS.reduce((s,c)=>s+c.sets,0);
 
@@ -881,7 +885,7 @@ function renderMpQuiz(s){
       if(v){
         const p=v.pct||0;
         const [cls,lbl]=p>=80?['qb-pass','✅ 완료']:p>=60?['qb-mid','🟡 진행']:['qb-fail','❌ 낮음'];
-        const d=v.lastAt?fmtDate(new Date(v.lastAt).getTime()):'-';
+        const d=v.lastAt?fmtDate(v.lastAt?.toMillis?.()??new Date(v.lastAt).getTime()):'-';
         h+=`<div class="qset"><span class="qset-name">Set ${i+1}</span><div class="qset-right"><span class="qb ${cls}">${lbl} ${p}%</span><div class="qset-meta">${v.score||''} · ${v.attempts||1}회 · ${d}</div></div></div>`;
       } else {
         h+=`<div class="qset"><span class="qset-name">Set ${i+1}</span><span class="qb qb-none">⬜ 미완료</span></div>`;
@@ -914,7 +918,7 @@ function renderMpLog(logs){
       const p=l.pct||0;
       const[cls,lbl]=p>=80?['lb-pass','✅ 완료']:p>=60?['lb-mid','🟡 진행']:['lb-fail','❌ 낮음'];
       const ts=l.timestamp?fmtDate(l.timestamp.toMillis()):'-';
-      return `<tr><td>${cat?cat.ko:'ID '+l.cid}</td><td>Set ${(l.setIndex||0)+1}</td><td><strong>${l.score||''}</strong></td><td><span class="lb ${cls}">${lbl} ${p}%</span></td><td style="color:var(--ink3)">${ts}</td></tr>`;
+      return `<tr><td>${cat?cat.ko:'ID '+l.cid}</td><td>${l.setIndex>=0?'Set '+(l.setIndex+1):'전체 모드'}</td><td><strong>${l.score||''}</strong></td><td><span class="lb ${cls}">${lbl} ${p}%</span></td><td style="color:var(--ink3)">${ts}</td></tr>`;
     }).join('')+
     '</tbody></table>';
 }

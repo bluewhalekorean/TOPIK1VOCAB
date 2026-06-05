@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="BW Korean">
 <link rel="manifest" href="manifest.json">
-<title>Blue Whale Korean · TTMIK 한국어 단어장</title>
+<title>TOPIK 1-2급 단어장 · Blue Whale Korean</title>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -998,6 +998,8 @@ body {
   box-shadow:0 2px 8px var(--shad)}
 .wel-start-cta:hover{border-color:var(--a);transform:translateY(-2px);
   box-shadow:0 6px 18px var(--shad2)}
+.wel-cta-returning{background:linear-gradient(135deg,#fef6ee,var(--surf2));
+  border-color:var(--a)!important}
 .wel-cta-lbl{font-size:.72rem;font-weight:700;color:var(--tx3)}
 .wel-cta-link{font-size:.92rem;font-weight:800;color:var(--ad);
   display:flex;align-items:center;gap:6px}
@@ -1085,7 +1087,7 @@ body {
 <div id="auth-overlay">
   <div id="auth-box">
     <div class="auth-logo">📚</div>
-    <div class="auth-title">TTMIK 단어장<br><span style="font-size:.75rem;font-weight:400;color:var(--tx3)">TTMIK Level 1+2</span></div>
+    <div class="auth-title">TOPIK 1-2급 단어장<br><span style="font-size:.75rem;font-weight:400;color:var(--tx3)">Korean Vocabulary</span></div>
     <div class="auth-sub" id="auth-sub">진도와 XP를 저장하고 뱃지를 모아보세요!<br><span style="font-size:.72rem;opacity:.7">Save your progress, earn XP &amp; collect badges</span></div>
     <div class="auth-tabs">
       <button class="atab active" id="tab-login" onclick="switchAuthTab('login')">로그인 · Login</button>
@@ -1107,8 +1109,8 @@ body {
   <button id="hbg" onclick="toggleSB()">☰</button>
   <button id="search-icon-btn" onclick="toggleMobileSearch()" title="검색">🔍</button>
   <div class="htxt" onclick="showWelcome()" style="cursor:pointer" title="홈으로">
-    <div class="sub">TTMIK L1+L2 · 339단어 · 16 Categories</div>
-    <h1>📚 TTMIK 단어장 <span style="font-weight:400;opacity:.7;font-size:.82rem">· L1 + L2</span></h1>
+    <div class="sub">TOPIK 1-2급 · 339단어 · 16 Categories</div>
+    <h1>📚 TOPIK 1-2급 단어장</h1>
   </div>
   <input id="srch" type="text" placeholder="🔍 검색 · Search..." oninput="doSearch(this.value)">
   <div id="uarea">
@@ -1132,30 +1134,42 @@ body {
 <div id="sb-overlay" onclick="closeSB()"></div>
 <div id="main">
   <div id="wel">
-  <div id="resume-banner" style="display:none;align-items:center;justify-content:space-between;
-    gap:10px;background:var(--surf);border:1.5px solid var(--brd2);border-radius:14px;
-    padding:10px 16px;margin-bottom:14px;font-size:.82rem;color:var(--tx2);font-weight:600;
-    box-shadow:0 2px 8px var(--shad)"></div>
-  <div class="wel-hero">
-    <h2>🐋 TTMIK 단어장</h2>
-    <div class="sub">Talk To Me In Korean · Level 1 &amp; 2 · 339단어 · 16 카테고리</div>
-    <div class="wel-stats">
-      <div class="wel-stat"><div class="n" id="ws-words">339</div><div class="l">단어 · Words</div></div>
-      <div class="wel-stat"><div class="n">16</div><div class="l">카테고리 · Cats</div></div>
-      <div class="wel-stat"><div class="n">3</div><div class="l">학습 모드</div></div>
-      <div class="wel-stat"><div class="n">★</div><div class="l">K-Culture Trivia</div></div>
-      <div class="wel-stat" id="ws-mastered"><div class="n" id="ws-m2">0</div><div class="l">단어 암기완료</div></div>
+  <!-- ① 스마트 시작/이어하기 CTA -->
+  <button class="wel-mobile-open" onclick="toggleSB()">📂 카테고리 선택하기 · Open Categories</button>
+  <div class="wel-start-cta" id="wel-cta" onclick="welCtaClick()" role="button" tabindex="0">
+    <div style="flex:1;min-width:0">
+      <div class="wel-cta-lbl" id="wel-cta-lbl">🚀 처음이라면 여기서 시작하세요! · Start here</div>
+      <div class="wel-cta-link" id="wel-cta-link">1. 🙏 인사 표현 · Greetings &amp; Expressions <span class="wel-cta-arrow">→</span></div>
+    </div>
+    <div id="wel-cta-icon" style="font-size:2rem">👋</div>
+  </div>
+
+  <!-- ② 나의 실력 평가 (이전 위치에서 상단으로 이동) -->
+  <div class="wel-eval">
+    <div class="wel-eval-title">📊 나의 실력 평가 · My Level Assessment</div>
+    <div class="wel-eval-bar-wrap">
+      <div class="wel-eval-bar">
+        <div class="wel-eval-fill" id="eval-fill" style="width:0%"></div>
+        <div class="wel-eval-marker" id="eval-marker" style="left:0%"></div>
+      </div>
+      <div class="wel-eval-scale">
+        <span>입문<br>A1 Beg.</span>
+        <span>초급<br>A1</span>
+        <span>초중급<br>A2</span>
+        <span>중급 준비<br>B1 Prep</span>
+        <span>중급<br>B1</span>
+      </div>
+    </div>
+    <div class="wel-eval-status" id="eval-status">로그인 후 확인 · Log in to see your level</div>
+    <div class="wel-eval-opinion">
+      💬 <b>선생님 코멘트</b>: 이 단어장의 339개를 모두 외우면 <b>TOPIK 1–2급</b> 기초 어휘 완성!
+      3급을 목표로 한다면 추가 단어(~2,000개)와 문법이 추가로 필요해요.
+      하지만 이 339개는 <b>가장 자주 쓰이는 핵심 어휘</b>라서 시작하기에 완벽합니다 🐋<br>
+      <span style="color:var(--tx3)">Teacher's note: These 339 words cover essential TOPIK Level 1–2 vocabulary. They are the most essential first words to master!</span>
     </div>
   </div>
 
-  <button class="wel-mobile-open" onclick="toggleSB()">📂 카테고리 선택하기 · Open Categories</button>
-  <div class="wel-start-cta" onclick="showCat(1)" role="button" tabindex="0">
-    <div>
-      <div class="wel-cta-lbl">🚀 처음이라면 여기서 시작하세요! · Start here if you're new</div>
-      <div class="wel-cta-link">1. 🙏 인사 표현 · Greetings &amp; Expressions <span class="wel-cta-arrow">→</span></div>
-    </div>
-    <div style="font-size:2rem">👋</div>
-  </div>
+  <!-- ③ 학습 가이드 -->
   <div class="wel-guide-title">📖 학습 가이드 · How to Study</div>
   <div class="wel-flow">
     <div class="wel-flow-row">
@@ -1206,28 +1220,16 @@ body {
     </div>
   </div>
 
-  <div class="wel-eval">
-    <div class="wel-eval-title">📊 나의 실력 평가 · My Level Assessment</div>
-    <div class="wel-eval-bar-wrap">
-      <div class="wel-eval-bar">
-        <div class="wel-eval-fill" id="eval-fill" style="width:0%"></div>
-        <div class="wel-eval-marker" id="eval-marker" style="left:0%"></div>
-      </div>
-      <div class="wel-eval-scale">
-        <span>입문<br>A1 Beg.</span>
-        <span>초급<br>A1</span>
-        <span>초중급<br>A2</span>
-        <span>중급 준비<br>B1 Prep</span>
-        <span>중급<br>B1</span>
-      </div>
-    </div>
-    <div class="wel-eval-status" id="eval-status">로그인 후 확인 · Log in to see your level</div>
-    <div class="wel-eval-opinion">
-      💬 <b>선생님 코멘트</b>: 이 단어장의 334개를 모두 외우면 <b>TOPIK 1–2급</b> 기초 어휘 완성!
-      3급을 목표로 한다면 TTMIK L3–L5 단어(~2,000개)와 문법이 추가로 필요해요.
-      하지만 이 334개는 <b>가장 자주 쓰이는 핵심 어휘</b>라서 시작하기에 완벽합니다 🐋<br>
-      <span style="color:var(--tx3)">Teacher's note: These 334 words cover essential TOPIK Level 1–2 vocabulary.
-      TOPIK Level 3 requires ~2,000 words (L3–L5). These are the most essential first words to master!</span>
+  <!-- ④ 앱 브랜딩 (최하단) -->
+  <div class="wel-hero">
+    <h2>🐋 TOPIK 1-2급 단어장</h2>
+    <div class="sub">TOPIK Level 1–2 · 339단어 · 16 카테고리</div>
+    <div class="wel-stats">
+      <div class="wel-stat"><div class="n" id="ws-words">339</div><div class="l">단어 · Words</div></div>
+      <div class="wel-stat"><div class="n">16</div><div class="l">카테고리 · Cats</div></div>
+      <div class="wel-stat"><div class="n">3</div><div class="l">학습 모드</div></div>
+      <div class="wel-stat"><div class="n">★</div><div class="l">K-Culture Trivia</div></div>
+      <div class="wel-stat" id="ws-mastered"><div class="n" id="ws-m2">0</div><div class="l">단어 암기완료</div></div>
     </div>
   </div>
 
@@ -1391,7 +1393,10 @@ const db   = firebase.firestore();
 
 // Show eval bar immediately from localStorage (before auth resolves)
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => { if(typeof updateEvalBar==='function') updateEvalBar(); }, 300);
+  setTimeout(() => {
+    if(typeof updateEvalBar==='function') updateEvalBar();
+    if(typeof updateWelcomeCTA==='function') updateWelcomeCTA();
+  }, 300);
 });
 
 // ── App State ─────────────────────────────────────────────────────────────────
@@ -1490,6 +1495,7 @@ auth.onAuthStateChanged(async user => {
     updateLastSeen();
     renderSidebar();
     updateEvalBar();
+    updateWelcomeCTA();
   } else {
     currentUser = null; PROG = {};
     document.getElementById('uname').textContent = '';
@@ -1796,26 +1802,89 @@ function updateSidebarBar(catId) {
     +`<div style="width:${p0}%;background:#e5e7eb;border-radius:0 2px 2px 0;height:100%"></div>`;
 }
 
+// ── Smart Welcome CTA ─────────────────────────────────────────────────────────
+let _welCtaId = 1;
+
+function updateWelcomeCTA() {
+  const lbl  = document.getElementById('wel-cta-lbl');
+  const link = document.getElementById('wel-cta-link');
+  const icon = document.getElementById('wel-cta-icon');
+  const cta  = document.getElementById('wel-cta');
+  if (!lbl) return;
+
+  // Last-studied category from localStorage
+  const lastId = (() => { try { return parseInt(localStorage.getItem('bwk_last_cat')) || 0; } catch(e) { return 0; } })();
+
+  // How many words has the user marked as mastered (level 2) per category?
+  function catMasteredCount(c) {
+    return c.words.filter(w => (MASTERY[c.id+'_'+w.no] ?? 0) >= 2).length;
+  }
+  const totalMastered = DATA.reduce((s,c) => s + catMasteredCount(c), 0);
+  const isNewUser = totalMastered === 0 && !lastId;
+
+  let targetCat = null;
+  let ctaLabel  = '';
+  let ctaEmoji  = '👋';
+  let ctaSub    = '';
+
+  if (isNewUser) {
+    // Brand-new: send to category 1
+    targetCat = DATA[0];
+    ctaLabel  = '🚀 처음이라면 여기서 시작하세요! · Start here if you\'re new';
+    ctaEmoji  = '👋';
+  } else {
+    // Returning user: find where to continue
+    let continueCat = null;
+
+    // 1st priority — last studied category if not fully mastered
+    if (lastId) {
+      const lc = DATA.find(c => c.id === lastId);
+      if (lc && catMasteredCount(lc) < lc.words.length) continueCat = lc;
+    }
+
+    // 2nd priority — first category that still has unmastered words
+    if (!continueCat) {
+      continueCat = DATA.find(c => catMasteredCount(c) < c.words.length) || DATA[0];
+    }
+
+    targetCat = continueCat;
+    const done  = catMasteredCount(targetCat);
+    const total = targetCat.words.length;
+    const pct   = Math.round(done / total * 100);
+
+    if (done === 0) {
+      ctaLabel = `⏭ 다음 카테고리 · Next up`;
+      ctaEmoji = '🎯';
+    } else {
+      ctaLabel = `▶ 이어서 학습하기 · Continue`;
+      ctaEmoji = '🔄';
+    }
+    ctaSub = ` · ${done}/${total}단어 (${pct}%)`;
+
+    // If last cat is done, show a completion nudge
+    if (lastId && (() => { const lc = DATA.find(c=>c.id===lastId); return lc && catMasteredCount(lc)>=lc.words.length; })()) {
+      ctaLabel = `✅ 완료! 다음으로 이동 · Category complete — next!`;
+      ctaEmoji = '🏆';
+      ctaSub   = '';
+    }
+  }
+
+  _welCtaId = targetCat.id;
+  lbl.textContent = ctaLabel;
+  link.innerHTML  = `${targetCat.id}. ${targetCat.ko} · ${targetCat.en}${ctaSub} <span class="wel-cta-arrow">→</span>`;
+  icon.textContent = ctaEmoji;
+
+  // Visual style: returning users get a warmer tint
+  if (cta) {
+    cta.classList.toggle('wel-cta-returning', !isNewUser);
+  }
+}
+
+function welCtaClick() { showCat(_welCtaId); }
+
 function showWelcome() {
   if(window.innerWidth<=700) closeSB();
-  // Show 'resume' prompt if user has a last category
-  try {
-    const lastId = parseInt(localStorage.getItem('bwk_last_cat'));
-    const resumeEl = document.getElementById('resume-banner');
-    if (lastId && resumeEl) {
-      const cat = DATA.find(c=>c.id===lastId);
-      if (cat) {
-        resumeEl.style.display = 'flex';
-        resumeEl.innerHTML = `<span>▶ 이어서 학습하기 · Continue: <b>${cat.ko}</b></span>
-          <button onclick="showCat(${lastId})" style="background:var(--a);color:#fff;border:none;
-          border-radius:20px;padding:5px 16px;cursor:pointer;font-family:inherit;font-weight:700;
-          font-size:.78rem">계속 →</button>
-          <button onclick="document.getElementById('resume-banner').style.display='none';
-          try{localStorage.removeItem('bwk_last_cat')}catch(e){}" 
-          style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:.8rem">✕</button>`;
-      }
-    }
-  } catch(e){}
+  updateWelcomeCTA();
 
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   if (CC) { stopTimer(CC.id); CC = null; }

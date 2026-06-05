@@ -1364,8 +1364,8 @@ body {
       <button class="fnb" onclick="fcNav(1)">다음 · Next ▶</button>
     </div>
     <div class="fcbtns">
-      <button class="fcbt" onclick="fcTTS('ko')">🔊 한국어</button>
-      <button class="fcbt" onclick="fcTTS('en')">🔊 English</button>
+      <button class="fcbt" onclick="fcTTS('ko')">🔊 단어 읽기</button>
+      <button class="fcbt" onclick="fcTTS('sen')">🔊 예문 읽기</button>
     </div>
   </div>
 </div>
@@ -2369,7 +2369,7 @@ function fcFlip(){
   }
 }
 function fcNav(d){ FCI=Math.max(0,Math.min(FCW.length-1,FCI+d)); renderFC(); }
-function fcTTS(lang){ const w=FCW[FCI]; speak(lang==='ko'?w.k:w.e,lang==='ko'?'ko-KR':'en-US'); }
+function fcTTS(lang){ const w=FCW[FCI]; if(lang==='sen') speak(w.s||w.k,'ko-KR'); else speak(lang==='ko'?w.k:w.e,lang==='ko'?'ko-KR':'en-US'); }
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function speak(text,lang){

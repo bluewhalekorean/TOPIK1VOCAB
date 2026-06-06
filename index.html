@@ -683,6 +683,10 @@ async function logQuizAttempt(cid, si, score, pct) {
       cid: String(cid), setIndex: si, score, pct,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
+    // quizCount in progress doc: used by teacher dashboard for accurate count
+    await db.collection('progress').doc(currentUser.uid).set({
+      quizCount: firebase.firestore.FieldValue.increment(1)
+    }, { merge: true });
   } catch(e) {}
 }
 

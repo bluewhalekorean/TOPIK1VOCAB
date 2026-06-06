@@ -1602,10 +1602,25 @@ async function saveProgress(cid, si, score) {
   const key = String(cid) + '_' + si;
   const parts = score.split('/');
   const pct = parts.length===2 ? Math.round(parseInt(parts[0])/parseInt(parts[1])*100) : 0;
-  // Always update in-memory PROG (guests see completion signs during session)
+  // Best-score protection: only save if new score is higher
+  const prevPct = PROG[key]?.pct || 0;
+  if (pct <= prevPct) {
+    // Still track attempt count even if score didn't improve
+    PROG[key] = { ...PROG[key], attempts: (PROG[key]?.attempts||0)+1 };
+    if (!currentUser) return;
+    try {
+      await db.collection('progress').doc(currentUser.uid).set({
+        ['sets.'+key+'.attempts']: firebase.firestore.FieldValue.increment(1),
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+        email: currentUser.email, displayName: currentUser.displayName||''
+      }, { merge: true });
+    } catch(e) {}
+    return;
+  }
+  // New best score — update in-memory and Firestore
   PROG[key] = { score, pct, attempts: (PROG[key]?.attempts||0)+1,
     lastAt: new Date().toISOString() };
-  if (!currentUser) return; // guests: in-memory only, synced on login
+  if (!currentUser) return; // guests: in-memory only
   try {
     await db.collection('progress').doc(currentUser.uid).set({
       ['sets.'+key+'.score']:    score,
@@ -1627,6 +1642,10 @@ async function logQuizAttempt(cid, si, score, pct) {
       cid: String(cid), setIndex: si, score, pct,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
+    // quizCount in progress doc: used by teacher dashboard for accurate count
+    await db.collection('progress').doc(currentUser.uid).set({
+      quizCount: firebase.firestore.FieldValue.increment(1)
+    }, { merge: true });
   } catch(e) {}
 }
 
@@ -2234,8 +2253,7 @@ function renderQuizQ(){
         logQuizAttempt(CC.id,QSF,sc,pct);
       } else {
         const sc=QS+'/'+QW.length;
-        const totalSets=Math.ceil(CC.words.length/10);
-        for(let i=0;i<totalSets;i++) saveProgress(CC.id,i,sc);
+        // All-words mode: log attempt only, do NOT overwrite individual set scores
         logQuizAttempt(CC.id,-1,sc,pct);
       }
     } else {
@@ -2248,6 +2266,7 @@ function renderQuizQ(){
     if(pct===100) GAME_DATA.perfects = (GAME_DATA.perfects||0)+1;
     GAME_DATA.wordsStudied = Math.max(GAME_DATA.wordsStudied||0, Object.keys(PROG).length*10);
     if(_xpEarned>0) addXP(_xpEarned);
+    else if(currentUser) saveGameData(); // save quizzes count even when no XP earned
     renderSidebar();
     const _wrongHtml = QWrong.length ? `
       <div class="wrong-review">

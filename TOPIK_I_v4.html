@@ -1533,6 +1533,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 auth.onAuthStateChanged(async user => {
+  console.log('[Auth]', user ? `로그인: ${user.email}` : '로그아웃 / null');
   if (user) {
     currentUser = user;
     document.getElementById('auth-overlay').style.display = 'none';

@@ -1783,8 +1783,14 @@ async function updateStreak() {
     let streak = ud.streak || 0;
     if (last === today) return;
     streak = (last === yesterday) ? streak + 1 : 1;
+    // Update maxStreak in GAME_DATA so checkBadges sees it
+    if (streak > (GAME_DATA.maxStreak||0)) {
+      GAME_DATA.maxStreak = streak;
+      checkBadges();
+      saveGameData();
+    }
     await db.collection('users').doc(currentUser.uid).update(
-      { streak, lastStudyDate: today });
+      { streak, lastStudyDate: today, maxStreak: Math.max(streak, ud.maxStreak||0) });
   } catch(e) {}
 }
 
@@ -1795,6 +1801,10 @@ async function stopTimer(cid) {
   const secs = Math.round((Date.now()-TIME_START[cid])/1000);
   delete TIME_START[cid];
   if (secs < 3 || secs > 7200) return;
+  // Accumulate in GAME_DATA so checkBadges can use it
+  GAME_DATA.studySecs = (GAME_DATA.studySecs||0) + secs;
+  checkBadges();
+  saveGameData(); // persist studySecs (non-blocking)
   try {
     await db.collection('progress').doc(currentUser.uid).set({
       ['timeSpent.'+cid]: firebase.firestore.FieldValue.increment(secs),
@@ -2942,12 +2952,18 @@ const BADGES = [
   {id:'xp800',    cat:'xp',  tier:2,icon:'🌠',name:'XP 800',      nameEn:'800 XP',          desc:'경험치 800 달성!',       thresh:'xp',      val:800},
   {id:'xp2000',   cat:'xp',  tier:3,icon:'🚀',name:'XP 2000',     nameEn:'2000 XP',         desc:'경험치 2000 달성!',      thresh:'xp',      val:2000},
   {id:'xp5000',   cat:'xp',  tier:4,icon:'🌌',name:'XP 5000',     nameEn:'5000 XP',         desc:'경험치 5000 달성!',      thresh:'xp',      val:5000},
+  // ─── ⏱ 학습 시간 (Study Time) ─────────────────────────────────
+  {id:'time30m',  cat:'time',tier:0,icon:'⏰',name:'첫 30분',      nameEn:'30 Minutes',      desc:'누적 30분 학습!',        thresh:'studySecs',val:1800},
+  {id:'time2h',   cat:'time',tier:1,icon:'📚',name:'2시간 학습',   nameEn:'2 Hours',         desc:'누적 2시간 학습!',       thresh:'studySecs',val:7200},
+  {id:'time10h',  cat:'time',tier:2,icon:'📖',name:'10시간 학습',  nameEn:'10 Hours',        desc:'누적 10시간 학습!',      thresh:'studySecs',val:36000},
+  {id:'time50h',  cat:'time',tier:3,icon:'🌙',name:'50시간 학습',  nameEn:'50 Hours',        desc:'누적 50시간 학습!',      thresh:'studySecs',val:180000},
+  {id:'time200h', cat:'time',tier:4,icon:'🏛️',name:'200시간 학습', nameEn:'200 Hours',       desc:'누적 200시간 학습!',     thresh:'studySecs',val:720000},
   // ─── 🐋 특별 업적 (Special) ──────────────────────────────────
   {id:'topik_i',  cat:'spec',tier:3,icon:'📋',name:'TOPIK I 준비',nameEn:'TOPIK I Ready',   desc:'퀴즈 50세트 + 단어 150개 암기 달성!', thresh:'topik1',  val:0},
   {id:'legend',   cat:'spec',tier:4,icon:'🐋',name:'TOPIK 전설',  nameEn:'TOPIK Legend',    desc:'최고 레벨 Lv.10 달성!', thresh:'level',   val:10},
 ];
 
-let GAME_DATA = {xp:0,level:1,badges:[],quizzes:0,perfects:0,wordsStudied:0,maxStreak:0,lastLoginDay:''};
+let GAME_DATA = {xp:0,level:1,badges:[],quizzes:0,perfects:0,wordsStudied:0,maxStreak:0,lastLoginDay:'',studySecs:0};
 
 // ── Level helpers ──────────────────────────────────────
 function getLevel(xp) {
@@ -3012,6 +3028,7 @@ function checkBadges() {
   const vals={
     quizzes:g.quizzes||0, perfects:g.perfects||0, mastery:masteryDone,
     streak:g.maxStreak||0, cats:catsDone, xp:g.xp||0, level:g.level||1,
+    studySecs:g.studySecs||0,
   };
   const cond={};
   BADGES.forEach(b=>{
@@ -3085,8 +3102,10 @@ function renderMpBadges() {
     str: '🔥 학습 스트릭 · Study Streak',
     cat: '📂 카테고리 정복 · Category Conquest',
     xp:  '✨ 경험치 · XP & Level',
+    time:'⏱ 학습 시간 · Study Time',
     spec:'🐋 특별 업적 · Special',
   };
+  const fmtHM=s=>s>=3600?Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m':Math.floor(s/60)+'m';
 
   // Progress for a badge (curr, max, pct)
   function bprog(b){
@@ -3146,7 +3165,7 @@ function renderMpBadges() {
               padding:1px 6px;border-radius:8px;border:1px solid ${t.border}">${t.ko}</span>
           </div>
           <div style="font-size:.67rem;color:var(--tx3);margin-bottom:5px">
-            ${p.dual?p.dual.join(' · '):`${p.curr} / ${p.max}`} — ${b.desc}
+            ${p.dual?p.dual.join(' · '):b.thresh==='studySecs'?`${fmtHM(p.curr)} / ${fmtHM(p.max)}`:`${p.curr} / ${p.max}`} — ${b.desc}
           </div>
           <div style="height:6px;background:var(--brd2);border-radius:3px;overflow:hidden">
             <div style="width:${p.pct}%;height:100%;background:${t.color};border-radius:3px;transition:.5s"></div>
@@ -3183,7 +3202,7 @@ function renderMpBadges() {
           <div class="bdg-v2-name" style="color:var(--tx2)">${b.name}</div>
           <div class="bdg-v2-prog">
             <div class="bdg-v2-bar"><div class="bdg-v2-bar-fill" style="width:${p.pct}%;background:${t.color}"></div></div>
-            <div class="bdg-v2-cnt">${p.dual?p.pct+'%':`${p.curr}/${p.max}`}</div>
+            <div class="bdg-v2-cnt">${p.dual?p.pct+'%':b.thresh==='studySecs'?fmtHM(p.curr)+'/'+fmtHM(p.max):`${p.curr}/${p.max}`}</div>
           </div>
         </div>`;
       }

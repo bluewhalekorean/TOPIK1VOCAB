@@ -1176,7 +1176,7 @@ body {
     <button class="hchip" id="mypage-btn" onclick="openMyPage()" style="display:none">👤 My Page</button>
     <button class="hchip gold" id="admin-btn" onclick="openAdmin()" style="display:none">📊 대시보드 · Dashboard</button>
     <button class="hchip" id="logout-btn" onclick="doLogout()" style="display:none">로그아웃 · Logout</button>
-    <button class="hchip" id="signin-btn" onclick="openAuthModal('login')" style="display:none">🔑 Sign In</button>
+    <button class="hchip" id="signin-btn" onclick="openAuthModal('login')">🔑 Sign In</button>
   </div>
 </div>
 
@@ -1444,8 +1444,11 @@ firebase.initializeApp(FB_CONFIG);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
-// Show eval bar immediately from localStorage (before auth resolves)
+// Render sidebar and eval bar immediately from localStorage (before auth resolves)
+// This ensures categories are visible right away without waiting for Firebase auth
 document.addEventListener('DOMContentLoaded', () => {
+  // Render sidebar in guest mode immediately so the page isn't blank
+  if(typeof renderSidebar==='function') renderSidebar();
   setTimeout(() => {
     if(typeof updateEvalBar==='function') updateEvalBar();
     if(typeof updateWelcomeCTA==='function') updateWelcomeCTA();

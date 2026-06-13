@@ -207,7 +207,7 @@ body{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-email{font-size:.72rem;color:var(--ink3);margin-top:1px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row-dots{display:flex;flex-wrap:wrap;gap:3px;max-width:160px}
+.row-dots{display:flex;flex-wrap:nowrap;gap:6px;align-items:flex-start}
 .row-pct{
   display:flex;flex-direction:column;gap:4px;
 }
@@ -658,26 +658,90 @@ const TEACHER_EMAIL="bluewhalekorean@gmail.com";
 firebase.initializeApp(FB_CONFIG);
 const auth=firebase.auth(), db=firebase.firestore();
 
-// CATS matches TOPIK_I_v3.html (16 categories, 41 total sets)
+// CATS = all 80 categories synced from build_topik_v4.py output (1067 total sets)
 const CATS=[
-  {id:1,  ko:"🙏 인사 표현",   sets:3, color:"#6366f1"},
-  {id:2,  ko:"🎒 기본 명사",   sets:3, color:"#8b5cf6"},
-  {id:3,  ko:"🍜 음식 & 맛",   sets:2, color:"#ec4899"},
-  {id:4,  ko:"🏃 동사 (L1)",   sets:3, color:"#f59e0b"},
-  {id:5,  ko:"🔢 숫자 & 날짜", sets:3, color:"#10b981"},
-  {id:6,  ko:"🕐 시간 & 장소", sets:3, color:"#0ea5e9"},
-  {id:7,  ko:"⚡ 동사 (L2)",   sets:3, color:"#f97316"},
-  {id:8,  ko:"📦 명사 (L2)",   sets:3, color:"#14b8a6"},
-  {id:9,  ko:"✨ 형용사",       sets:3, color:"#a855f7"},
-  {id:10, ko:"📅 요일 & 날짜", sets:3, color:"#06b6d4"},
-  {id:11, ko:"🍽️ 식당 표현",   sets:2, color:"#f97316"},
-  {id:12, ko:"🗺️ 길 묻기",    sets:2, color:"#10b981"},
-  {id:13, ko:"🤝 친해지기",    sets:2, color:"#8b5cf6"},
-  {id:14, ko:"💕 데이트",       sets:2, color:"#ec4899"},
-  {id:15, ko:"💼 비즈니스",    sets:2, color:"#1d4ed8"},
-  {id:16, ko:"🎬 드라마 & 감탄",sets:2, color:"#7c3aed"},
+  {id:1,ko:"🙏 인사 표현",en:"Greetings & Expressions",sets:3,color:"#6366f1"},
+  {id:2,ko:"🎒 기본 명사",en:"Basic Nouns & Pronouns",sets:3,color:"#8b5cf6"},
+  {id:3,ko:"🍜 음식 & 맛",en:"Food & Taste",sets:2,color:"#ec4899"},
+  {id:4,ko:"🏃 동사 기초",en:"Basic Action Verbs",sets:3,color:"#f59e0b"},
+  {id:5,ko:"🔢 숫자 & 단위",en:"Numbers & Counters",sets:3,color:"#10b981"},
+  {id:6,ko:"🕐 시간 & 장소",en:"Time & Place",sets:3,color:"#0ea5e9"},
+  {id:7,ko:"⚡ 동사 활용",en:"Action Verbs (Advanced)",sets:3,color:"#f97316"},
+  {id:8,ko:"📦 명사 심화",en:"Nouns & People",sets:3,color:"#14b8a6"},
+  {id:9,ko:"✨ 형용사",en:"Adjectives & Feelings",sets:3,color:"#a855f7"},
+  {id:10,ko:"📅 요일 & 날짜",en:"Days, Months & Time",sets:3,color:"#06b6d4"},
+  {id:11,ko:"🍽️ 식당 표현",en:"At the Restaurant",sets:2,color:"#f97316"},
+  {id:12,ko:"🗺️ 길 묻기",en:"Asking for Directions",sets:2,color:"#10b981"},
+  {id:13,ko:"🤝 친해지기",en:"Getting to Know Someone",sets:2,color:"#8b5cf6"},
+  {id:14,ko:"💕 데이트",en:"Dating & Polite Rejection",sets:2,color:"#ec4899"},
+  {id:15,ko:"💼 비즈니스",en:"Business Conversations",sets:2,color:"#1d4ed8"},
+  {id:16,ko:"🎬 드라마 & 감탄",en:"K-Drama & Movie Reactions",sets:2,color:"#7c3aed"},
+  {id:17,ko:"😊 감정 & 심리",en:"Emotions & Psychology",sets:5,color:"#fb7185"},
+  {id:18,ko:"💭 생각 & 말하기",en:"Speaking & Thinking",sets:10,color:"#f97316"},
+  {id:19,ko:"👥 관계 & 예절",en:"Relationships & Manners",sets:10,color:"#fbbf24"},
+  {id:20,ko:"🌍 장소 & 방향",en:"Places & Directions",sets:11,color:"#34d399"},
+  {id:21,ko:"⏰ 시간 & 순서",en:"Time & Sequence",sets:10,color:"#06b6d4"},
+  {id:22,ko:"🔄 행동 & 변화",en:"Actions & Changes",sets:16,color:"#818cf8"},
+  {id:23,ko:"🎨 색깔 & 외모",en:"Colors & Appearance",sets:5,color:"#f472b6"},
+  {id:24,ko:"📏 크기 & 비교",en:"Size & Comparison",sets:6,color:"#38bdf8"},
+  {id:25,ko:"🧠 성격 & 특성",en:"Personality & Traits",sets:11,color:"#a78bfa"},
+  {id:26,ko:"🌱 자연 & 계절",en:"Nature & Seasons",sets:8,color:"#4ade80"},
+  {id:27,ko:"🛒 쇼핑 & 소비",en:"Shopping & Consumer",sets:10,color:"#fb923c"},
+  {id:28,ko:"🍽️ 식재료 & 요리",en:"Ingredients & Cooking",sets:11,color:"#f59e0b"},
+  {id:29,ko:"🏃 건강 & 신체",en:"Health & Body",sets:10,color:"#f43f5e"},
+  {id:30,ko:"📚 학교 & 학습",en:"School & Study",sets:6,color:"#3b82f6"},
+  {id:31,ko:"🎭 취미 & 여가",en:"Hobbies & Leisure",sets:9,color:"#8b5cf6"},
+  {id:32,ko:"🏠 집 & 주거",en:"Home & Living",sets:6,color:"#10b981"},
+  {id:33,ko:"🚌 교통 & 이동",en:"Transport & Travel",sets:9,color:"#6366f1"},
+  {id:34,ko:"🔗 연결어 & 부사",en:"Connectors & Adverbs",sets:10,color:"#64748b"},
+  {id:35,ko:"🔢 숫자 & 단위",en:"Numbers & Units",sets:6,color:"#94a3b8"},
+  {id:36,ko:"📝 기타 어휘",en:"Other Vocabulary",sets:1,color:"#94a3b8"},
+  {id:37,ko:"📗 3급 사회·경제",en:"TOPIK 3 · Society & Economy",sets:10,color:"#16a34a"},
+  {id:38,ko:"📗 3급 심리·감정",en:"TOPIK 3 · Psychology & Emotions",sets:5,color:"#16a34a"},
+  {id:39,ko:"📗 3급 문화·예술",en:"TOPIK 3 · Culture, Arts & Media",sets:8,color:"#16a34a"},
+  {id:40,ko:"📗 3급 자연·환경",en:"TOPIK 3 · Nature & Environment",sets:12,color:"#16a34a"},
+  {id:41,ko:"📗 3급 의료·건강",en:"TOPIK 3 · Health & Medicine",sets:7,color:"#16a34a"},
+  {id:42,ko:"📗 3급 교육·학습",en:"TOPIK 3 · Education & Learning",sets:5,color:"#16a34a"},
+  {id:43,ko:"📗 3급 과학·기술",en:"TOPIK 3 · Science & Technology",sets:7,color:"#16a34a"},
+  {id:44,ko:"📗 3급 일상·생활",en:"TOPIK 3 · Daily Life & Living",sets:19,color:"#16a34a"},
+  {id:45,ko:"📗 3급 명사",en:"TOPIK 3 · Nouns",sets:60,color:"#16a34a"},
+  {id:46,ko:"📗 3급 동사·형용사",en:"TOPIK 3 · Verbs & Adj.",sets:19,color:"#16a34a"},
+  {id:47,ko:"📗 3급 부사·기타",en:"TOPIK 3 · Adverbs & More",sets:10,color:"#16a34a"},
+  {id:48,ko:"📘 4급 사회·경제",en:"TOPIK 4 · Society & Economy",sets:16,color:"#2563eb"},
+  {id:49,ko:"📘 4급 심리·감정",en:"TOPIK 4 · Psychology & Emotions",sets:8,color:"#2563eb"},
+  {id:50,ko:"📘 4급 문화·예술",en:"TOPIK 4 · Culture, Arts & Media",sets:9,color:"#2563eb"},
+  {id:51,ko:"📘 4급 자연·환경",en:"TOPIK 4 · Nature & Environment",sets:12,color:"#2563eb"},
+  {id:52,ko:"📘 4급 의료·건강",en:"TOPIK 4 · Health & Medicine",sets:9,color:"#2563eb"},
+  {id:53,ko:"📘 4급 교육·학습",en:"TOPIK 4 · Education & Learning",sets:7,color:"#2563eb"},
+  {id:54,ko:"📘 4급 과학·기술",en:"TOPIK 4 · Science & Technology",sets:7,color:"#2563eb"},
+  {id:55,ko:"📘 4급 일상·생활",en:"TOPIK 4 · Daily Life & Living",sets:17,color:"#2563eb"},
+  {id:56,ko:"📘 4급 명사",en:"TOPIK 4 · Nouns",sets:67,color:"#2563eb"},
+  {id:57,ko:"📘 4급 동사·형용사",en:"TOPIK 4 · Verbs & Adj.",sets:44,color:"#2563eb"},
+  {id:58,ko:"📘 4급 부사·기타",en:"TOPIK 4 · Adverbs & More",sets:18,color:"#2563eb"},
+  {id:59,ko:"📙 5급 사회·경제",en:"TOPIK 5 · Society & Economy",sets:14,color:"#9333ea"},
+  {id:60,ko:"📙 5급 심리·감정",en:"TOPIK 5 · Psychology & Emotions",sets:8,color:"#9333ea"},
+  {id:61,ko:"📙 5급 문화·예술",en:"TOPIK 5 · Culture, Arts & Media",sets:12,color:"#9333ea"},
+  {id:62,ko:"📙 5급 자연·환경",en:"TOPIK 5 · Nature & Environment",sets:17,color:"#9333ea"},
+  {id:63,ko:"📙 5급 의료·건강",en:"TOPIK 5 · Health & Medicine",sets:13,color:"#9333ea"},
+  {id:64,ko:"📙 5급 교육·학습",en:"TOPIK 5 · Education & Learning",sets:7,color:"#9333ea"},
+  {id:65,ko:"📙 5급 과학·기술",en:"TOPIK 5 · Science & Technology",sets:9,color:"#9333ea"},
+  {id:66,ko:"📙 5급 일상·생활",en:"TOPIK 5 · Daily Life & Living",sets:18,color:"#9333ea"},
+  {id:67,ko:"📙 5급 명사",en:"TOPIK 5 · Nouns",sets:85,color:"#9333ea"},
+  {id:68,ko:"📙 5급 동사·형용사",en:"TOPIK 5 · Verbs & Adj.",sets:32,color:"#9333ea"},
+  {id:69,ko:"📙 5급 부사·기타",en:"TOPIK 5 · Adverbs & More",sets:11,color:"#9333ea"},
+  {id:70,ko:"📕 6급 사회·경제",en:"TOPIK 6 · Society & Economy",sets:16,color:"#dc2626"},
+  {id:71,ko:"📕 6급 심리·감정",en:"TOPIK 6 · Psychology & Emotions",sets:8,color:"#dc2626"},
+  {id:72,ko:"📕 6급 문화·예술",en:"TOPIK 6 · Culture, Arts & Media",sets:11,color:"#dc2626"},
+  {id:73,ko:"📕 6급 자연·환경",en:"TOPIK 6 · Nature & Environment",sets:12,color:"#dc2626"},
+  {id:74,ko:"📕 6급 의료·건강",en:"TOPIK 6 · Health & Medicine",sets:12,color:"#dc2626"},
+  {id:75,ko:"📕 6급 교육·학습",en:"TOPIK 6 · Education & Learning",sets:6,color:"#dc2626"},
+  {id:76,ko:"📕 6급 과학·기술",en:"TOPIK 6 · Science & Technology",sets:9,color:"#dc2626"},
+  {id:77,ko:"📕 6급 일상·생활",en:"TOPIK 6 · Daily Life & Living",sets:19,color:"#dc2626"},
+  {id:78,ko:"📕 6급 명사",en:"TOPIK 6 · Nouns",sets:98,color:"#dc2626"},
+  {id:79,ko:"📕 6급 동사·형용사",en:"TOPIK 6 · Verbs & Adj.",sets:49,color:"#dc2626"},
+  {id:80,ko:"📕 6급 부사·기타",en:"TOPIK 6 · Adverbs & More",sets:14,color:"#dc2626"},
 ];
-const TOTAL_SETS=CATS.reduce((s,c)=>s+c.sets,0);
+const TOTAL_SETS=CATS.reduce((s,c)=>s+c.sets,0); // 1067
 
 let allStudents=[],sortMode='recent',currentModalUid=null,pendingDeleteUid=null,logsCache={};
 
@@ -848,11 +912,29 @@ function rowHTML(s){
   const quizzes=s.quizCount||0;
   const allPcts=Object.values(s.sets||{}).map(v=>v?.pct||0).filter(Boolean);
   const avg=allPcts.length?Math.round(allPcts.reduce((a,b)=>a+b)/allPcts.length):0;
-  const dots=CATS.map(c=>{
-    const p=Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length;
-    const a=Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length;
-    const bg=p===c.sets&&c.sets>0?c.color:a>0?c.color+'66':'#e2e8f0';
-    return `<span title="${c.ko}: ${p}/${c.sets}" style="width:9px;height:9px;border-radius:50%;background:${bg};display:inline-block;flex-shrink:0"></span>`;
+  // Level-group progress bars: 1-2급 / 3급 / 4급 / 5급 / 6급
+  const lvGroups=[
+    {lbl:'1-2급',ids:Array.from({length:36},(_,i)=>i+1),color:'#6366f1'},
+    {lbl:'3급',  ids:Array.from({length:11},(_,i)=>i+37),color:'#16a34a'},
+    {lbl:'4급',  ids:Array.from({length:11},(_,i)=>i+48),color:'#2563eb'},
+    {lbl:'5급',  ids:Array.from({length:11},(_,i)=>i+59),color:'#9333ea'},
+    {lbl:'6급',  ids:Array.from({length:11},(_,i)=>i+70),color:'#dc2626'},
+  ];
+  const dots=lvGroups.map(g=>{
+    const gc=CATS.filter(c=>g.ids.includes(c.id));
+    const totalS=gc.reduce((acc,c)=>acc+c.sets,0);
+    const doneS=gc.reduce((acc,c)=>acc+Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length,0);
+    const startedS=gc.reduce((acc,c)=>acc+Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length,0);
+    const donePct=totalS?Math.round(doneS/totalS*100):0;
+    const startPct=totalS?Math.round(startedS/totalS*100):0;
+    return `<div title="${g.lbl}: ${doneS}/${totalS} Set 완료" style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:32px">
+      <div style="font-size:.6rem;color:var(--ink3);font-weight:600">${g.lbl}</div>
+      <div style="width:32px;height:6px;border-radius:3px;background:#e5e7eb;overflow:hidden;position:relative">
+        <div style="position:absolute;left:0;top:0;height:100%;width:${startPct}%;background:${g.color}44"></div>
+        <div style="position:absolute;left:0;top:0;height:100%;width:${donePct}%;background:${g.color}"></div>
+      </div>
+      <div style="font-size:.58rem;color:var(--ink3)">${donePct}%</div>
+    </div>`;
   }).join('');
   return `<div class="student-row" onclick="openStudentModal('${s.uid}')">
     <div class="row-user">
@@ -928,11 +1010,39 @@ function renderMpOverview(s){
   const joined=s.createdAt?fmtFull(s.createdAt.toMillis?.()??s.createdAt):'-';
   const last=s.lastSeen?fmtFull(s.lastSeen.toMillis?.()??s.lastSeen):'-';
   const doneCats=CATS.filter(c=>Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length===c.sets&&c.sets>0);
-  const partCats=CATS.filter(c=>Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length>0&&Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length<c.sets);
+  const partCats=CATS.filter(c=>{const done=Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length;const started=Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length;return started>0&&done<c.sets;});
   const noneCats=CATS.filter(c=>Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length===0);
+
+  // Level progress summary (1-2급/3급/4급/5급/6급)
+  const lvDefs=[
+    {lbl:'1-2급',ids:Array.from({length:36},(_,i)=>i+1),color:'#6366f1'},
+    {lbl:'3급',  ids:Array.from({length:11},(_,i)=>i+37),color:'#16a34a'},
+    {lbl:'4급',  ids:Array.from({length:11},(_,i)=>i+48),color:'#2563eb'},
+    {lbl:'5급',  ids:Array.from({length:11},(_,i)=>i+59),color:'#9333ea'},
+    {lbl:'6급',  ids:Array.from({length:11},(_,i)=>i+70),color:'#dc2626'},
+  ];
+  const lvBars=lvDefs.map(g=>{
+    const gc=CATS.filter(c=>g.ids.includes(c.id));
+    const tot=gc.reduce((a,c)=>a+c.sets,0);
+    const done=gc.reduce((a,c)=>a+Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(x=>x&&(x.pct||0)>=80).length,0);
+    const started=gc.reduce((a,c)=>a+Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).filter(Boolean).length,0);
+    const dp=tot?Math.round(done/tot*100):0;
+    const sp=tot?Math.round(started/tot*100):0;
+    return `<div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <span style="font-size:.75rem;font-weight:700;color:${g.color}">${g.lbl}</span>
+        <span style="font-size:.7rem;color:var(--ink3)">${done}/${tot} Set · ✅ ${dp}%</span>
+      </div>
+      <div style="height:7px;border-radius:4px;background:#e5e7eb;overflow:hidden;position:relative">
+        <div style="position:absolute;left:0;top:0;height:100%;width:${sp}%;background:${g.color}33"></div>
+        <div style="position:absolute;left:0;top:0;height:100%;width:${dp}%;background:${g.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
   document.getElementById('mpanel-0').innerHTML=`
     <div class="ov-kpi-row">
-      <div class="ov-kpi"><div class="ov-kpi-icon">⏱️</div><div class="ov-kpi-val">${fmtSecs(totalSecs)}</div><div class="ov-kpi-lbl">총 학습 시간</div></div>
+      <div class="ov-kpi"><div class="ov-kpi-icon">⏱️</div><div class="ov-kpi-val">${fmtSecs(totalSecs)||'0초'}</div><div class="ov-kpi-lbl">총 학습 시간</div></div>
       <div class="ov-kpi"><div class="ov-kpi-icon">✅</div><div class="ov-kpi-val">${pass}<span style="font-size:.85rem;font-weight:600;color:var(--ink3)"> /${TOTAL_SETS}</span></div><div class="ov-kpi-lbl">완료 Set (80%+)</div></div>
       <div class="ov-kpi"><div class="ov-kpi-icon">📊</div><div class="ov-kpi-val">${avg?avg+'%':'—'}</div><div class="ov-kpi-lbl">평균 퀴즈 점수</div></div>
       <div class="ov-kpi"><div class="ov-kpi-icon">📝</div><div class="ov-kpi-val">${s.quizCount||0}</div><div class="ov-kpi-lbl">총 퀴즈 횟수</div></div>
@@ -944,16 +1054,22 @@ function renderMpOverview(s){
       <div class="ov-meta"><div class="ov-meta-lbl">🕐 마지막 접속</div><div class="ov-meta-val">${last}</div></div>
     </div>
     <div class="cat-status-box">
-      <div style="font-size:.78rem;font-weight:700;color:var(--ink2);margin-bottom:14px">카테고리 현황 — <span style="color:var(--green)">${doneCats.length}개 완료</span> · <span style="color:var(--amber)">${partCats.length}개 진행 중</span> · <span style="color:var(--ink3)">${noneCats.length}개 미시작</span></div>
-      ${doneCats.length?`<div class="cat-status-lbl"><span style="color:var(--green)">✅</span> 완료 (80% 이상)</div><div class="cat-chips" style="margin-bottom:12px">${doneCats.map(c=>`<span class="c-chip c-chip-done">${c.ko}</span>`).join('')}</div>`:''}
-      ${partCats.length?`<div class="cat-status-lbl"><span style="color:var(--amber)">🟡</span> 진행 중</div><div class="cat-chips" style="margin-bottom:12px">${partCats.map(c=>`<span class="c-chip c-chip-part">${c.ko}</span>`).join('')}</div>`:''}
-      ${noneCats.length?`<div class="cat-status-lbl" style="color:var(--ink3)">⬜ 미시작</div><div class="cat-chips">${noneCats.map(c=>`<span class="c-chip c-chip-none">${c.ko}</span>`).join('')}</div>`:''}
+      <div style="font-size:.78rem;font-weight:700;color:var(--ink2);margin-bottom:12px">레벨별 진도 — <span style="color:var(--green)">${doneCats.length}개 완료</span> · <span style="color:var(--amber)">${partCats.length}개 진행 중</span></div>
+      ${lvBars}
+      ${partCats.length?`<div class="cat-status-lbl" style="margin-top:14px"><span style="color:var(--amber)">🟡</span> 진행 중 카테고리</div><div class="cat-chips" style="margin-bottom:8px">${partCats.map(c=>`<span class="c-chip c-chip-part">${c.ko}</span>`).join('')}</div>`:''}
+      ${doneCats.length?`<div class="cat-status-lbl"><span style="color:var(--green)">✅</span> 완료 카테고리</div><div class="cat-chips">${doneCats.map(c=>`<span class="c-chip c-chip-done">${c.ko}</span>`).join('')}</div>`:''}
     </div>`;
 }
 
 function renderMpQuiz(s){
-  let h='<div class="qprog-grid">';
-  CATS.forEach(c=>{
+  // Only show categories the student has actually attempted
+  const attemptedCats=CATS.filter(c=>Array.from({length:c.sets},(_,i)=>s.sets?.[c.id+'_'+i]).some(Boolean));
+  if(!attemptedCats.length){
+    document.getElementById('mpanel-1').innerHTML='<div style="padding:24px;text-align:center;color:var(--ink3)">퀴즈 기록이 없습니다.</div>';
+    return;
+  }
+  let h=`<div style="font-size:.75rem;color:var(--ink3);margin-bottom:12px">${attemptedCats.length}개 카테고리 시도 / 전체 ${CATS.length}개</div><div class="qprog-grid">`;
+  attemptedCats.forEach(c=>{
     h+=`<div class="qcat"><div class="qcat-top" style="background:${c.color}">${c.ko}<span style="opacity:.7;font-weight:500">${c.sets} Sets</span></div><div class="qcat-body">`;
     for(let i=0;i<c.sets;i++){
       const v=s.sets?.[c.id+'_'+i];

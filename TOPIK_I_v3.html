@@ -1760,15 +1760,17 @@ async function saveProgress(cid, si, score) {
 
 async function logQuizAttempt(cid, si, score, pct) {
   if (!currentUser) return;
+  // quizCount saved independently so quizLog failure doesn't block it
+  try {
+    await db.collection('progress').doc(currentUser.uid).set({
+      quizCount: firebase.firestore.FieldValue.increment(1)
+    }, { merge: true });
+  } catch(e) { console.warn('quizCount', e); }
   try {
     await db.collection('progress').doc(currentUser.uid).collection('quizLog').add({
       cid: String(cid), setIndex: si, score, pct,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
-    // quizCount in progress doc: used by teacher dashboard for accurate count
-    await db.collection('progress').doc(currentUser.uid).set({
-      quizCount: firebase.firestore.FieldValue.increment(1)
-    }, { merge: true });
   } catch(e) {}
 }
 
@@ -3228,17 +3230,36 @@ function renderMpBadges() {
 // ── Persistence ────────────────────────────────────────
 async function saveGameData() {
   if (!currentUser) return;
+  try { localStorage.setItem('bwk_game', JSON.stringify(GAME_DATA)); } catch(e){}
   try { await db.collection('users').doc(currentUser.uid).set({game:GAME_DATA},{merge:true}); }
   catch(e){ console.warn('saveGameData',e); }
 }
 
 async function loadGameData() {
   if (!currentUser) return;
+  // localStorage 백업 먼저 적용 (Firestore 실패 시 보존)
+  try {
+    const lsBak = JSON.parse(localStorage.getItem('bwk_game')||'null');
+    if (lsBak) GAME_DATA = Object.assign(GAME_DATA, lsBak);
+  } catch(e){}
   try {
     const doc = await db.collection('users').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().game) GAME_DATA = Object.assign(GAME_DATA, doc.data().game);
-  } catch(e){ console.warn('loadGameData',e); }
+    if (doc.exists && doc.data().game) {
+      const remote = doc.data().game;
+      // Firestore wins on most fields; keep higher XP/counts if local is ahead
+      const merged = Object.assign({}, GAME_DATA, remote);
+      merged.xp       = Math.max(GAME_DATA.xp||0,       remote.xp||0);
+      merged.quizzes  = Math.max(GAME_DATA.quizzes||0,  remote.quizzes||0);
+      merged.perfects = Math.max(GAME_DATA.perfects||0, remote.perfects||0);
+      merged.studySecs= Math.max(GAME_DATA.studySecs||0,remote.studySecs||0);
+      GAME_DATA = merged;
+    }
+  } catch(e){
+    console.warn('loadGameData', e);
+    // Firestore 실패 → localStorage 백업으로 이미 복원됨
+  }
   GAME_DATA.level = getLevel(GAME_DATA.xp||0).lv;
+  try { localStorage.setItem('bwk_game', JSON.stringify(GAME_DATA)); } catch(e){}
   updateXPBar();
   // daily login XP (+5)
   const today = new Date().toDateString();
